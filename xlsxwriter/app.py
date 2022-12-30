@@ -95,8 +95,8 @@ class App(xmlwriter.XMLwriter):
     def _write_properties(self):
         # Write the <Properties> element.
         schema = 'http://schemas.openxmlformats.org/officeDocument/2006/'
-        xmlns = schema + 'extended-properties'
-        xmlns_vt = schema + 'docPropsVTypes'
+        xmlns = f'{schema}extended-properties'
+        xmlns_vt = f'{schema}docPropsVTypes'
 
         attributes = [
             ('xmlns', xmlns),
@@ -124,14 +124,9 @@ class App(xmlwriter.XMLwriter):
         self._xml_end_tag('HeadingPairs')
 
     def _write_titles_of_parts(self):
-        # Write the <TitlesOfParts> element.
-        parts_data = []
-
         self._xml_start_tag('TitlesOfParts')
 
-        for part_name in self.part_names:
-            parts_data.append(('lpstr', part_name))
-
+        parts_data = [('lpstr', part_name) for part_name in self.part_names]
         self._write_vt_vector('lpstr', parts_data)
 
         self._xml_end_tag('TitlesOfParts')
@@ -158,7 +153,7 @@ class App(xmlwriter.XMLwriter):
 
     def _write_vt_data(self, vt_data):
         # Write the <vt:*> elements such as <vt:lpstr> and <vt:if>.
-        self._xml_data_element("vt:%s" % vt_data[0], vt_data[1])
+        self._xml_data_element(f"vt:{vt_data[0]}", vt_data[1])
 
     def _write_company(self):
         company = self.properties.get('company', '')

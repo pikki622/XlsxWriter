@@ -108,7 +108,7 @@ class Format(xmlwriter.XMLwriter):
 
         # Convert properties in the constructor to method calls.
         for key, value in properties.items():
-            getattr(self, 'set_' + key)(value)
+            getattr(self, f'set_{key}')(value)
 
         self._format_key = None
 
@@ -775,13 +775,12 @@ class Format(xmlwriter.XMLwriter):
         # Check for properties that are mutually exclusive.
         if self.text_wrap:
             self.shrink = 0
-        if self.text_h_align == 4:
+        if self.text_h_align in [4, 5]:
             self.shrink = 0
-        if self.text_h_align == 5:
+            self.just_distrib = 0
+        elif self.text_h_align == 7:
             self.shrink = 0
-        if self.text_h_align == 7:
-            self.shrink = 0
-        if self.text_h_align != 7:
+        else:
             self.just_distrib = 0
         if self.indent:
             self.just_distrib = 0
@@ -790,17 +789,17 @@ class Format(xmlwriter.XMLwriter):
 
         if self.text_h_align == 1:
             align.append(('horizontal', 'left'))
-        if self.text_h_align == 2:
+        elif self.text_h_align == 2:
             align.append(('horizontal', 'center'))
-        if self.text_h_align == 3:
+        elif self.text_h_align == 3:
             align.append(('horizontal', 'right'))
-        if self.text_h_align == 4:
+        elif self.text_h_align == 4:
             align.append(('horizontal', 'fill'))
-        if self.text_h_align == 5:
+        elif self.text_h_align == 5:
             align.append(('horizontal', 'justify'))
-        if self.text_h_align == 6:
+        elif self.text_h_align == 6:
             align.append(('horizontal', continuous))
-        if self.text_h_align == 7:
+        elif self.text_h_align == 7:
             align.append(('horizontal', 'distributed'))
 
         if self.just_distrib:
@@ -810,11 +809,11 @@ class Format(xmlwriter.XMLwriter):
         # without an alignment sub-element.
         if self.text_v_align == 1:
             align.append(('vertical', 'top'))
-        if self.text_v_align == 2:
+        elif self.text_v_align == 2:
             align.append(('vertical', 'center'))
-        if self.text_v_align == 4:
+        elif self.text_v_align == 4:
             align.append(('vertical', 'justify'))
-        if self.text_v_align == 5:
+        elif self.text_v_align == 5:
             align.append(('vertical', 'distributed'))
 
         if self.indent:
@@ -829,7 +828,7 @@ class Format(xmlwriter.XMLwriter):
 
         if self.reading_order == 1:
             align.append(('readingOrder', 1))
-        if self.reading_order == 2:
+        elif self.reading_order == 2:
             align.append(('readingOrder', 2))
 
         return changed, align
@@ -860,102 +859,94 @@ class Format(xmlwriter.XMLwriter):
         return self._format_key
 
     def _get_font_key(self):
-        # Returns a unique hash key for a font. Used by Workbook.
-        key = ':'.join(str(x) for x in (
-            self.bold,
-            self.font_color,
-            self.font_charset,
-            self.font_family,
-            self.font_outline,
-            self.font_script,
-            self.font_shadow,
-            self.font_strikeout,
-            self.font_name,
-            self.italic,
-            self.font_size,
-            self.underline,
-            self.theme))
-
-        return key
+        return ':'.join(
+            str(x)
+            for x in (
+                self.bold,
+                self.font_color,
+                self.font_charset,
+                self.font_family,
+                self.font_outline,
+                self.font_script,
+                self.font_shadow,
+                self.font_strikeout,
+                self.font_name,
+                self.italic,
+                self.font_size,
+                self.underline,
+                self.theme,
+            )
+        )
 
     def _get_border_key(self):
-        # Returns a unique hash key for a border style. Used by Workbook.
-        key = ':'.join(str(x) for x in (
-            self.bottom,
-            self.bottom_color,
-            self.diag_border,
-            self.diag_color,
-            self.diag_type,
-            self.left,
-            self.left_color,
-            self.right,
-            self.right_color,
-            self.top,
-            self.top_color))
-
-        return key
+        return ':'.join(
+            str(x)
+            for x in (
+                self.bottom,
+                self.bottom_color,
+                self.diag_border,
+                self.diag_color,
+                self.diag_type,
+                self.left,
+                self.left_color,
+                self.right,
+                self.right_color,
+                self.top,
+                self.top_color,
+            )
+        )
 
     def _get_fill_key(self):
-        # Returns a unique hash key for a fill style. Used by Workbook.
-        key = ':'.join(str(x) for x in (
-            self.pattern,
-            self.bg_color,
-            self.fg_color))
-
-        return key
+        return ':'.join(
+            str(x) for x in (self.pattern, self.bg_color, self.fg_color)
+        )
 
     def _get_alignment_key(self):
-        # Returns a unique hash key for alignment formats.
-
-        key = ':'.join(str(x) for x in (
-            self.text_h_align,
-            self.text_v_align,
-            self.indent,
-            self.rotation,
-            self.text_wrap,
-            self.shrink,
-            self.reading_order))
-
-        return key
+        return ':'.join(
+            str(x)
+            for x in (
+                self.text_h_align,
+                self.text_v_align,
+                self.indent,
+                self.rotation,
+                self.text_wrap,
+                self.shrink,
+                self.reading_order,
+            )
+        )
 
     def _get_xf_index(self):
-        # Returns the XF index number used by Excel to identify a format.
         if self.xf_index is not None:
             # Format already has an index number so return it.
             return self.xf_index
-        else:
-            # Format doesn't have an index number so assign one.
-            key = self._get_format_key()
+        # Format doesn't have an index number so assign one.
+        key = self._get_format_key()
 
-            if key in self.xf_format_indices:
-                # Format matches existing format with an index.
-                return self.xf_format_indices[key]
-            else:
-                # New format requiring an index. Note. +1 since Excel
-                # has an implicit "General" format at index 0.
-                index = 1 + len(self.xf_format_indices)
-                self.xf_format_indices[key] = index
-                self.xf_index = index
-                return index
+        if key in self.xf_format_indices:
+            # Format matches existing format with an index.
+            return self.xf_format_indices[key]
+        # New format requiring an index. Note. +1 since Excel
+        # has an implicit "General" format at index 0.
+        index = 1 + len(self.xf_format_indices)
+        self.xf_format_indices[key] = index
+        self.xf_index = index
+        return index
 
     def _get_dxf_index(self):
-        # Returns the DXF index number used by Excel to identify a format.
         if self.dxf_index is not None:
             # Format already has an index number so return it.
             return self.dxf_index
-        else:
-            # Format doesn't have an index number so assign one.
-            key = self._get_format_key()
+        # Format doesn't have an index number so assign one.
+        key = self._get_format_key()
 
-            if key in self.dxf_format_indices:
-                # Format matches existing format with an index.
-                return self.dxf_format_indices[key]
-            else:
-                # New format requiring an index.
-                index = len(self.dxf_format_indices)
-                self.dxf_format_indices[key] = index
-                self.dxf_index = index
-                return index
+        if key in self.dxf_format_indices:
+            # Format matches existing format with an index.
+            return self.dxf_format_indices[key]
+        # New format requiring an index.
+        index = len(self.dxf_format_indices)
+        self.dxf_format_indices[key] = index
+        self.dxf_index = index
+        return index
 
     def _get_color(self, color):
         # Used in conjunction with the set_xxx_color methods to convert a

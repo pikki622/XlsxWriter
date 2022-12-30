@@ -34,8 +34,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet.set_comments_author('John')
 
-        worksheet.set_header('&L&G',
-                             {'image_left': self.image_dir + 'red.jpg'})
+        worksheet.set_header('&L&G', {'image_left': f'{self.image_dir}red.jpg'})
 
         workbook.close()
 

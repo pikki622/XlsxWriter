@@ -91,12 +91,7 @@ class ChartRadar(chart.Chart):
         self._xml_end_tag('c:radarChart')
 
     def _write_radar_style(self):
-        # Write the <c:radarStyle> element.
-        val = 'marker'
-
-        if self.subtype == 'filled':
-            val = 'filled'
-
+        val = 'filled' if self.subtype == 'filled' else 'marker'
         attributes = [('val', val)]
 
         self._xml_empty_tag('c:radarStyle', attributes)

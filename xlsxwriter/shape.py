@@ -104,28 +104,28 @@ class Shape(object):
         # Copy the user defined properties since they will be modified.
         line = copy.deepcopy(line)
 
-        dash_types = {
-            'solid': 'solid',
-            'round_dot': 'sysDot',
-            'square_dot': 'sysDash',
-            'dash': 'dash',
-            'dash_dot': 'dashDot',
-            'long_dash': 'lgDash',
-            'long_dash_dot': 'lgDashDot',
-            'long_dash_dot_dot': 'lgDashDotDot',
-            'dot': 'dot',
-            'system_dash_dot': 'sysDashDot',
-            'system_dash_dot_dot': 'sysDashDotDot',
-        }
-
         # Check the dash type.
         dash_type = line.get('dash_type')
 
         if dash_type is not None:
+            dash_types = {
+                'solid': 'solid',
+                'round_dot': 'sysDot',
+                'square_dot': 'sysDash',
+                'dash': 'dash',
+                'dash_dot': 'dashDot',
+                'long_dash': 'lgDash',
+                'long_dash_dot': 'lgDashDot',
+                'long_dash_dot_dot': 'lgDashDotDot',
+                'dot': 'dot',
+                'system_dash_dot': 'sysDashDot',
+                'system_dash_dot_dot': 'sysDashDotDot',
+            }
+
             if dash_type in dash_types:
                 line['dash_type'] = dash_types[dash_type]
             else:
-                warn("Unknown dash type '%s'" % dash_type)
+                warn(f"Unknown dash type '{dash_type}'")
                 return
 
         line['defined'] = True
@@ -216,8 +216,8 @@ class Shape(object):
         }
 
         # Check for valid types.
-        if not pattern['pattern'] in types:
-            warn("unknown pattern type '%s'" % pattern['pattern'])
+        if pattern['pattern'] not in types:
+            warn(f"unknown pattern type '{pattern['pattern']}'")
             return
         else:
             pattern['pattern'] = types[pattern['pattern']]
@@ -236,13 +236,6 @@ class Shape(object):
 
         # Copy the user defined properties since they will be modified.
         gradient = copy.deepcopy(gradient)
-
-        types = {
-            'linear': 'linear',
-            'radial': 'circle',
-            'rectangular': 'rect',
-            'path': 'shape'
-        }
 
         # Check the colors array exists and is valid.
         if 'colors' not in gradient or type(gradient['colors']) != list:
@@ -267,23 +260,20 @@ class Shape(object):
                     warn("Gradient position must be in the range "
                          "0 <= position <= 100")
                     return
+        elif len(gradient['colors']) == 2:
+            gradient['positions'] = [0, 100]
+
+        elif len(gradient['colors']) == 3:
+            gradient['positions'] = [0, 50, 100]
+
+        elif len(gradient['colors']) == 4:
+            gradient['positions'] = [0, 33, 66, 100]
+
         else:
-            # Use the default gradient positions.
-            if len(gradient['colors']) == 2:
-                gradient['positions'] = [0, 100]
+            warn("Must specify gradient positions")
+            return
 
-            elif len(gradient['colors']) == 3:
-                gradient['positions'] = [0, 50, 100]
-
-            elif len(gradient['colors']) == 4:
-                gradient['positions'] = [0, 33, 66, 100]
-
-            else:
-                warn("Must specify gradient positions")
-                return
-
-        angle = gradient.get('angle')
-        if angle:
+        if angle := gradient.get('angle'):
             if not 0 <= angle < 360:
                 warn("Gradient angle must be in the range "
                      "0 <= angle < 360")
@@ -296,10 +286,17 @@ class Shape(object):
 
         if gradient_type is not None:
 
+            types = {
+                'linear': 'linear',
+                'radial': 'circle',
+                'rectangular': 'rect',
+                'path': 'shape'
+            }
+
             if gradient_type in types:
                 gradient['type'] = types[gradient_type]
             else:
-                warn("Unknown gradient type '%s" % gradient_type)
+                warn(f"Unknown gradient type '{gradient_type}")
                 return
         else:
             gradient['type'] = 'linear'
@@ -396,7 +393,7 @@ class Shape(object):
             if align_type in align_types:
                 align['vertical'] = align_types[align_type]
             else:
-                warn("Unknown alignment type '%s'" % align_type)
+                warn(f"Unknown alignment type '{align_type}'")
                 return {'defined': False}
 
         if 'horizontal' in align:
@@ -411,7 +408,7 @@ class Shape(object):
             if align_type in align_types:
                 align['horizontal'] = align_types[align_type]
             else:
-                warn("Unknown alignment type '%s'" % align_type)
+                warn(f"Unknown alignment type '{align_type}'")
                 return {'defined': False}
 
         align['defined'] = True

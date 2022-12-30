@@ -51,7 +51,7 @@ def time_xlsxwriter(optimised=False):
 
     workbook = xlsxwriter.Workbook(filename,
                                    options=options)
-    for r in range(sheets):
+    for _ in range(sheets):
         worksheet = workbook.add_worksheet()
 
         for row in range(0, row_max, 2):
@@ -76,7 +76,7 @@ def time_openpyxl(optimised=False):
     filename = 'openpyxl.xlsx'
 
     workbook = openpyxl.Workbook(write_only=optimised)
-    for r in range(sheets):
+    for _ in range(sheets):
         worksheet = workbook.create_sheet()
 
         for row in range(row_max // 2):
@@ -96,9 +96,9 @@ def time_openpyxl(optimised=False):
 
 print("")
 print("Versions:")
-print("%s: %s" % ('python', str(sys.version).split()[0]))
-print("%s: %s" % ('openpyxl', openpyxl.__version__))
-print("%s: %s" % ('xlsxwriter', xlsxwriter.__version__))
+print(f"python: {str(sys.version).split()[0]}")
+print(f"openpyxl: {openpyxl.__version__}")
+print(f"xlsxwriter: {xlsxwriter.__version__}")
 print("")
 
 print("Dimensions:")

@@ -27,8 +27,8 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        worksheet.insert_image('E9', self.image_dir + 'red.png')
-        worksheet.insert_image('E13', self.image_dir + 'red.png')
+        worksheet.insert_image('E9', f'{self.image_dir}red.png')
+        worksheet.insert_image('E13', f'{self.image_dir}red.png')
 
         workbook.close()
 

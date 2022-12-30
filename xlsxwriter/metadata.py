@@ -69,7 +69,7 @@ class Metadata(xmlwriter.XMLwriter):
         # Write the <metadata> element.
         xmlns = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
         schema = 'http://schemas.microsoft.com/office'
-        xmlns_xda = schema + '/spreadsheetml/2017/dynamicarray'
+        xmlns_xda = f'{schema}/spreadsheetml/2017/dynamicarray'
 
         attributes = [
             ('xmlns', xmlns),

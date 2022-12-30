@@ -25,7 +25,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         workbook = Workbook(self.got_filename, {'constant_memory': True, 'in_memory': False})
 
-        for i in range(1, 10):
+        for _ in range(1, 10):
             worksheet = workbook.add_worksheet()
             worksheet.write('A1', 'Hello 1')
             worksheet.write('A2', 'Hello 2')
@@ -40,7 +40,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         workbook = Workbook(self.got_filename, {'constant_memory': True, 'in_memory': False})
 
-        for i in range(1, 10):
+        for _ in range(1, 10):
             worksheet = workbook.add_worksheet()
             worksheet.write('A1', 'Hello 1')
             worksheet.write('A2', 'Hello 2')
@@ -56,7 +56,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         workbook = Workbook(self.got_filename, {'constant_memory': True, 'in_memory': False})
 
-        for i in range(1, 10):
+        for _ in range(1, 10):
             worksheet = workbook.add_worksheet()
             worksheet.write('A1', 'Hello 1')
             worksheet._opt_close()

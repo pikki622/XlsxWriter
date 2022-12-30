@@ -48,7 +48,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet.write('F13', None, bold_italic)
 
-        worksheet.insert_image('E12', self.image_dir + 'logo.png')
+        worksheet.insert_image('E12', f'{self.image_dir}logo.png')
 
         workbook.close()
 

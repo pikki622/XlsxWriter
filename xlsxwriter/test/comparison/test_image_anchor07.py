@@ -27,13 +27,10 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        worksheet.insert_image('A1', self.image_dir + 'blue.png')
-        worksheet.insert_image(
-            'B3', self.image_dir + 'red.jpg', {'positioning': 3})
-        worksheet.insert_image(
-            'D5', self.image_dir + 'yellow.jpg', {'positioning': 2})
-        worksheet.insert_image(
-            'F9', self.image_dir + 'grey.png', {'positioning': 1})
+        worksheet.insert_image('A1', f'{self.image_dir}blue.png')
+        worksheet.insert_image('B3', f'{self.image_dir}red.jpg', {'positioning': 3})
+        worksheet.insert_image('D5', f'{self.image_dir}yellow.jpg', {'positioning': 2})
+        worksheet.insert_image('F9', f'{self.image_dir}grey.png', {'positioning': 1})
 
         workbook.close()
 

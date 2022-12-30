@@ -37,49 +37,37 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
         # Add filter criteria.
         worksheet.filter_column('D', 'region == East')
 
-        # Open a text file with autofilter example data.
-        textfile = open(self.txt_filename)
+        with open(self.txt_filename) as textfile:
+            # Read the headers from the first line of the input file.
+            headers = textfile.readline().strip("\n").split()
 
-        # Read the headers from the first line of the input file.
-        headers = textfile.readline().strip("\n").split()
+            # Write out the headers.
+            worksheet.write_row('D3', headers)
 
-        # Write out the headers.
-        worksheet.write_row('D3', headers)
+                # Read the rest of the text file and write it to the worksheet.
+            for row, line in enumerate(textfile, start=3):
 
-        # Start writing data after the headers.
-        row = 3
+                # Split the input data based on whitespace.
+                data = line.strip("\n").split()
 
-        # Read the rest of the text file and write it to the worksheet.
-        for line in textfile:
+                # Convert the number data from the text file.
+                for i, item in enumerate(data):
+                    try:
+                        data[i] = float(item)
+                    except ValueError:
+                        pass
 
-            # Split the input data based on whitespace.
-            data = line.strip("\n").split()
+                # Get some of the field data.
+                region = data[0]
 
-            # Convert the number data from the text file.
-            for i, item in enumerate(data):
-                try:
-                    data[i] = float(item)
-                except ValueError:
-                    pass
+                        # Check for rows that match the filter.
+                if region != 'East':
+                    # We need to hide rows that don't match the filter.
+                    worksheet.set_row(row, options={'hidden': True})
 
-            # Get some of the field data.
-            region = data[0]
+                # Write out the row data.
+                worksheet.write_row(row, 3, data)
 
-            # Check for rows that match the filter.
-            if region == 'East':
-                # Row matches the filter, no further action required.
-                pass
-            else:
-                # We need to hide rows that don't match the filter.
-                worksheet.set_row(row, options={'hidden': True})
-
-            # Write out the row data.
-            worksheet.write_row(row, 3, data)
-
-            # Move on to the next worksheet row.
-            row += 1
-
-        textfile.close()
         workbook.close()
 
         self.assertExcelEqual()

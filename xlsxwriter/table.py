@@ -75,7 +75,7 @@ class Table(xmlwriter.XMLwriter):
     def _write_table(self):
         # Write the <table> element.
         schema = 'http://schemas.openxmlformats.org/'
-        xmlns = schema + 'spreadsheetml/2006/main'
+        xmlns = f'{schema}spreadsheetml/2006/main'
         table_id = self.properties['id']
         name = self.properties['name']
         display_name = self.properties['name']
@@ -168,11 +168,14 @@ class Table(xmlwriter.XMLwriter):
         if name is not None and name != '' and name != 'None':
             attributes.append(('name', name))
 
-        attributes.append(('showFirstColumn', show_first_column))
-        attributes.append(('showLastColumn', show_last_column))
-        attributes.append(('showRowStripes', show_row_stripes))
-        attributes.append(('showColumnStripes', show_column_stripes))
-
+        attributes.extend(
+            (
+                ('showFirstColumn', show_first_column),
+                ('showLastColumn', show_last_column),
+                ('showRowStripes', show_row_stripes),
+                ('showColumnStripes', show_column_stripes),
+            )
+        )
         self._xml_empty_tag('tableStyleInfo', attributes)
 
     def _write_calculated_column_formula(self, formula):

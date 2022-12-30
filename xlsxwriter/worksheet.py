@@ -137,7 +137,7 @@ def convert_column_args(method):
                 int(args[0])
         except ValueError:
             # First arg isn't an int, convert to A1 notation.
-            cell_1, cell_2 = [col + '1' for col in args[0].split(':')]
+            cell_1, cell_2 = [f'{col}1' for col in args[0].split(':')]
             _, col_1 = xl_cell_to_rowcol(cell_1)
             _, col_2 = xl_cell_to_rowcol(cell_2)
             new_args = [col_1, col_2]

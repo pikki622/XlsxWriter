@@ -31,9 +31,11 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
         worksheet.write('A1', 1)
         worksheet.write('A2', 2)
 
-        worksheet.insert_image('E9',
-                               self.image_dir + 'red.png',
-                               {'url': 'https://github.com/jmcnamara'})
+        worksheet.insert_image(
+            'E9',
+            f'{self.image_dir}red.png',
+            {'url': 'https://github.com/jmcnamara'},
+        )
 
         chart.add_series({'values': '=Sheet1!$A$1:$A$2'})
 

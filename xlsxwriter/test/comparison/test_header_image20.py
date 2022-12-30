@@ -28,8 +28,9 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        worksheet.set_header('&C&G',
-                             {'image_center': self.image_dir + 'watermark.jpg'})
+        worksheet.set_header(
+            '&C&G', {'image_center': f'{self.image_dir}watermark.jpg'}
+        )
 
         workbook.close()
 

@@ -104,9 +104,9 @@ class Vml(xmlwriter.XMLwriter):
     def _write_xml_namespace(self):
         # Write the <xml> element. This is the root element of VML.
         schema = 'urn:schemas-microsoft-com:'
-        xmlns = schema + 'vml'
-        xmlns_o = schema + 'office:office'
-        xmlns_x = schema + 'office:excel'
+        xmlns = f'{schema}vml'
+        xmlns_o = f'{schema}office:office'
+        xmlns_x = f'{schema}office:excel'
 
         attributes = [
             ('xmlns:v', xmlns),
@@ -314,10 +314,8 @@ class Vml(xmlwriter.XMLwriter):
         # Write the <v:shape> element.
         shape_type = '#_x0000_t202'
         insetmode = 'auto'
-        visibility = 'hidden'
-
         # Set the shape index.
-        shape_id = '_x0000_s' + str(shape_id)
+        shape_id = f'_x0000_s{str(shape_id)}'
 
         # Get the comment parameters
         row = comment[0]
@@ -328,10 +326,7 @@ class Vml(xmlwriter.XMLwriter):
 
         (left, top, width, height) = self._pixels_to_points(vertices)
 
-        # Set the visibility.
-        if visible:
-            visibility = 'visible'
-
+        visibility = 'visible' if visible else 'hidden'
         style = (
             'position:absolute;'
             'margin-left:%.15gpt;'
@@ -373,7 +368,7 @@ class Vml(xmlwriter.XMLwriter):
         shape_type = '#_x0000_t201'
 
         # Set the shape index.
-        shape_id = '_x0000_s' + str(shape_id)
+        shape_id = f'_x0000_s{str(shape_id)}'
 
         # Get the button parameters.
         # row = button["_row"]
@@ -399,12 +394,15 @@ class Vml(xmlwriter.XMLwriter):
         if button.get('description'):
             attributes.append(('alt', button['description']))
 
-        attributes.append(('style', style))
-        attributes.append(('o:button', 't'))
-        attributes.append(('fillcolor', 'buttonFace [67]'))
-        attributes.append(('strokecolor', 'windowText [64]'))
-        attributes.append(('o:insetmode', 'auto'))
-
+        attributes.extend(
+            (
+                ('style', style),
+                ('o:button', 't'),
+                ('fillcolor', 'buttonFace [67]'),
+                ('strokecolor', 'windowText [64]'),
+                ('o:insetmode', 'auto'),
+            )
+        )
         self._xml_start_tag('v:shape', attributes)
 
         # Write the v:fill element.
@@ -426,7 +424,7 @@ class Vml(xmlwriter.XMLwriter):
         shape_type = '#_x0000_t75'
 
         # Set the shape index.
-        shape_id = '_x0000_s' + str(shape_id)
+        shape_id = f'_x0000_s{str(shape_id)}'
 
         # Get the image parameters
         width = image_data[0]
@@ -533,7 +531,7 @@ class Vml(xmlwriter.XMLwriter):
     def _write_div(self, align, font=None):
         # Write the <div> element.
 
-        style = 'text-align:' + align
+        style = f'text-align:{align}'
 
         attributes = [('style', style)]
 
@@ -678,10 +676,7 @@ class Vml(xmlwriter.XMLwriter):
 
     def _write_imagedata(self, ref_id, o_title):
         # Write the <v:imagedata> element.
-        attributes = [
-            ('o:relid', 'rId' + str(ref_id)),
-            ('o:title', o_title),
-        ]
+        attributes = [('o:relid', f'rId{str(ref_id)}'), ('o:title', o_title)]
 
         self._xml_empty_tag('v:imagedata', attributes)
 

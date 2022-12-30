@@ -105,11 +105,7 @@ class ChartStock(chart.Chart):
         self._xml_end_tag('c:stockChart')
 
     def _modify_series_formatting(self):
-        # Add default formatting to the series data.
-
-        index = 0
-
-        for series in self.series:
+        for index, series in enumerate(self.series):
             if index % 4 != 3:
                 if not series['line']['defined']:
                     series['line'] = {'width': 2.25,
@@ -117,9 +113,8 @@ class ChartStock(chart.Chart):
                                       'defined': 1}
 
                 if series['marker'] is None:
-                    if index % 4 == 2:
-                        series['marker'] = {'type': 'dot', 'size': 3}
-                    else:
-                        series['marker'] = {'type': 'none'}
-
-            index += 1
+                    series['marker'] = (
+                        {'type': 'dot', 'size': 3}
+                        if index % 4 == 2
+                        else {'type': 'none'}
+                    )

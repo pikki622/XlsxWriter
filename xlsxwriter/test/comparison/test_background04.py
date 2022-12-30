@@ -28,8 +28,8 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
         worksheet1 = workbook.add_worksheet()
         worksheet2 = workbook.add_worksheet()
 
-        worksheet1.set_background(self.image_dir + 'logo.jpg')
-        worksheet2.set_background(self.image_dir + 'logo.jpg')
+        worksheet1.set_background(f'{self.image_dir}logo.jpg')
+        worksheet2.set_background(f'{self.image_dir}logo.jpg')
 
         workbook.close()
 

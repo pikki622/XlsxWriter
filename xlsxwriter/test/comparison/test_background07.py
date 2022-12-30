@@ -28,11 +28,10 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        worksheet.insert_image('E9', self.image_dir + 'logo.jpg')
-        worksheet.set_background(self.image_dir + 'logo.jpg')
+        worksheet.insert_image('E9', f'{self.image_dir}logo.jpg')
+        worksheet.set_background(f'{self.image_dir}logo.jpg')
 
-        worksheet.set_header('&C&G',
-                             {'image_center': self.image_dir + 'blue.jpg'})
+        worksheet.set_header('&C&G', {'image_center': f'{self.image_dir}blue.jpg'})
 
         worksheet.write('A1', 'Foo')
         worksheet.write_comment('B2', 'Some text')

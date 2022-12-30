@@ -110,16 +110,9 @@ class ChartPie(chart.Chart):
 
         # Write the subclass chart type element.
         self._write_chart_type(None)
-        # Configure a combined chart if present.
-        second_chart = self.combined
-
-        if second_chart:
+        if second_chart := self.combined:
             # Secondary axis has unique id otherwise use same as primary.
-            if second_chart.is_secondary:
-                second_chart.id = 1000 + self.id
-            else:
-                second_chart.id = self.id
-
+            second_chart.id = 1000 + self.id if second_chart.is_secondary else self.id
             # Share the same filehandle for writing.
             second_chart.fh = self.fh
 
@@ -195,11 +188,7 @@ class ChartPie(chart.Chart):
     def _write_tx_pr_legend(self, horiz, font):
         # Write the <c:txPr> element for legends.
 
-        if font and font.get('rotation'):
-            rotation = font['rotation']
-        else:
-            rotation = None
-
+        rotation = font['rotation'] if font and font.get('rotation') else None
         self._xml_start_tag('c:txPr')
 
         # Write the a:bodyPr element.

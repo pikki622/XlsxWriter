@@ -45,11 +45,8 @@ date_formats = (
     'hh:mm:ss.000',
 )
 
-# Start from first row after headers.
-row = 1
-
 # Write the same date and time using each of the above formats.
-for date_format_str in date_formats:
+for row, date_format_str in enumerate(date_formats, start=1):
 
     # Create a format for the date or time.
     date_format = workbook.add_format({'num_format': date_format_str,
@@ -60,7 +57,5 @@ for date_format_str in date_formats:
 
     # Also write the format string for comparison.
     worksheet.write_string(row, 1, date_format_str)
-
-    row += 1
 
 workbook.close()

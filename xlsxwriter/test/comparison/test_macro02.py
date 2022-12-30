@@ -27,7 +27,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        workbook.add_vba_project(self.vba_dir + 'vbaProject03.bin')
+        workbook.add_vba_project(f'{self.vba_dir}vbaProject03.bin')
         workbook.set_vba_name('MyWorkbook')
         worksheet.set_vba_name('MySheet1')
 

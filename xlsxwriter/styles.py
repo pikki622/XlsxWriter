@@ -112,7 +112,7 @@ class Styles(xmlwriter.XMLwriter):
         if color[0] == '#':
             color = color[1:]
 
-        return "FF" + color.upper()
+        return f"FF{color.upper()}"
 
     ###########################################################################
     #
@@ -186,11 +186,7 @@ class Styles(xmlwriter.XMLwriter):
 
         # Set the format code for built-in number formats.
         if num_fmt_id < 164:
-            if num_fmt_id in format_codes:
-                format_code = format_codes[num_fmt_id]
-            else:
-                format_code = 'General'
-
+            format_code = format_codes.get(num_fmt_id, 'General')
         attributes = [
             ('numFmtId', num_fmt_id),
             ('formatCode', format_code),
@@ -410,9 +406,8 @@ class Styles(xmlwriter.XMLwriter):
         if bg_color:
             bg_color = self._get_palette_color(bg_color)
             self._xml_empty_tag('bgColor', [('rgb', bg_color)])
-        else:
-            if not is_dxf_format and pattern <= 1:
-                self._xml_empty_tag('bgColor', [('indexed', 64)])
+        elif not is_dxf_format and pattern <= 1:
+            self._xml_empty_tag('bgColor', [('indexed', 64)])
 
         self._xml_end_tag('patternFill')
         self._xml_end_tag('fill')
@@ -440,9 +435,7 @@ class Styles(xmlwriter.XMLwriter):
         elif xf_format.diag_type == 2:
             attributes.append(('diagonalDown', 1))
         elif xf_format.diag_type == 3:
-            attributes.append(('diagonalUp', 1))
-            attributes.append(('diagonalDown', 1))
-
+            attributes.extend((('diagonalUp', 1), ('diagonalDown', 1)))
         # Ensure that a default diag border is set if the diag type is set.
         if xf_format.diag_type and not xf_format.diag_border:
             xf_format.diag_border = 1
@@ -485,9 +478,6 @@ class Styles(xmlwriter.XMLwriter):
         self._xml_end_tag('border')
 
     def _write_sub_border(self, border_type, style, color):
-        # Write the <border> sub elements such as <right>, <top>, etc.
-        attributes = []
-
         if not style:
             self._xml_empty_tag(border_type)
             return
@@ -509,8 +499,7 @@ class Styles(xmlwriter.XMLwriter):
             'slantDashDot',
         )
 
-        attributes.append(('style', border_styles[style]))
-
+        attributes = [('style', border_styles[style])]
         self._xml_start_tag(border_type, attributes)
 
         if color:
@@ -522,12 +511,7 @@ class Styles(xmlwriter.XMLwriter):
         self._xml_end_tag(border_type)
 
     def _write_cell_style_xfs(self):
-        # Write the <cellStyleXfs> element.
-        count = 1
-
-        if self.has_hyperlink:
-            count = 2
-
+        count = 2 if self.has_hyperlink else 1
         attributes = [('count', count)]
 
         self._xml_start_tag('cellStyleXfs', attributes)
@@ -571,12 +555,15 @@ class Styles(xmlwriter.XMLwriter):
         ]
 
         if has_hyperlink:
-            attributes.append(('applyNumberFormat', 0))
-            attributes.append(('applyFill', 0))
-            attributes.append(('applyBorder', 0))
-            attributes.append(('applyAlignment', 0))
-            attributes.append(('applyProtection', 0))
-
+            attributes.extend(
+                (
+                    ('applyNumberFormat', 0),
+                    ('applyFill', 0),
+                    ('applyBorder', 0),
+                    ('applyAlignment', 0),
+                    ('applyProtection', 0),
+                )
+            )
             self._xml_start_tag('xf', attributes)
             self._xml_empty_tag('alignment', [('vertical', 'top')])
             self._xml_empty_tag('protection', [('locked', 0)])
@@ -592,7 +579,6 @@ class Styles(xmlwriter.XMLwriter):
         fill_id = xf_format.fill_index
         border_id = xf_format.border_index
         xf_id = xf_format.xf_id
-        has_align = 0
         has_protect = 0
 
         attributes = [
@@ -621,10 +607,7 @@ class Styles(xmlwriter.XMLwriter):
         # Check if XF format has alignment properties set.
         (apply_align, align) = xf_format._get_align_properties()
 
-        # Check if an alignment sub-element should be written.
-        if apply_align and align:
-            has_align = 1
-
+        has_align = 1 if apply_align and align else 0
         # We can also have applyAlignment without a sub-element.
         if apply_align or xf_format.hyperlink:
             attributes.append(('applyAlignment', 1))
@@ -632,30 +615,31 @@ class Styles(xmlwriter.XMLwriter):
         # Check for cell protection properties.
         protection = xf_format._get_protection_properties()
 
-        if protection or xf_format.hyperlink:
+        if protection:
             attributes.append(('applyProtection', 1))
 
             if not xf_format.hyperlink:
                 has_protect = 1
 
+        elif xf_format.hyperlink:
+            attributes.append(('applyProtection', 1))
+
         # Write XF with sub-elements if required.
-        if has_align or has_protect:
+        if has_align:
             self._xml_start_tag('xf', attributes)
-            if has_align:
-                self._xml_empty_tag('alignment', align)
+            self._xml_empty_tag('alignment', align)
             if has_protect:
                 self._xml_empty_tag('protection', protection)
+            self._xml_end_tag('xf')
+        elif has_protect:
+            self._xml_start_tag('xf', attributes)
+            self._xml_empty_tag('protection', protection)
             self._xml_end_tag('xf')
         else:
             self._xml_empty_tag('xf', attributes)
 
     def _write_cell_styles(self):
-        # Write the <cellStyles> element.
-        count = 1
-
-        if self.has_hyperlink:
-            count = 2
-
+        count = 2 if self.has_hyperlink else 1
         attributes = [('count', count)]
 
         self._xml_start_tag('cellStyles', attributes)
@@ -740,7 +724,7 @@ class Styles(xmlwriter.XMLwriter):
 
         # Limit the mruColors to the last 10.
         if len(custom_colors) > 10:
-            custom_colors = custom_colors[0:10]
+            custom_colors = custom_colors[:10]
 
         self._xml_start_tag('mruColors')
 

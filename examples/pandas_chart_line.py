@@ -12,11 +12,11 @@ import random
 
 # Create some sample data to plot.
 categories  = ['Node 1', 'Node 2', 'Node 3', 'Node 4']
-index_1     = range(0, 21, 1)
+index_1 = range(21)
 multi_iter1 = {'index': index_1}
 
 for category in categories:
-    multi_iter1[category] = [random.randint(10, 100) for x in index_1]
+    multi_iter1[category] = [random.randint(10, 100) for _ in index_1]
 
 # Create a Pandas dataframe from the data.
 index_2 = multi_iter1.pop('index')

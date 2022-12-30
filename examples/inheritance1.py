@@ -23,13 +23,11 @@ class MyWorksheet(Worksheet):
 
         data = args[0]
 
-        # Reverse strings to demonstrate the overridden method.
-        if isinstance(data, str):
-            data = data[::-1]
-            return self.write_string(row, col, data)
-        else:
+        if not isinstance(data, str):
             # Call the parent version of write() as usual for other data.
             return super(MyWorksheet, self).write(row, col, *args)
+        data = data[::-1]
+        return self.write_string(row, col, data)
 
 
 class MyWorkbook(Workbook):
@@ -40,10 +38,7 @@ class MyWorkbook(Workbook):
     """
 
     def add_worksheet(self, name=None):
-        # Overwrite add_worksheet() to create a MyWorksheet object.
-        worksheet = super(MyWorkbook, self).add_worksheet(name, MyWorksheet)
-
-        return worksheet
+        return super(MyWorkbook, self).add_worksheet(name, MyWorksheet)
 
 
 # Create a new MyWorkbook object.

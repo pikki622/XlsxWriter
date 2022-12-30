@@ -85,17 +85,13 @@ class Workbook(xmlwriter.XMLwriter):
         self.remove_timezone = options.get('remove_timezone', False)
         self.use_future_functions = options.get('use_future_functions', False)
         self.default_format_properties = \
-            options.get('default_format_properties', {})
+                options.get('default_format_properties', {})
 
         self.max_url_length = options.get('max_url_length', 2079)
         if self.max_url_length < 255:
             self.max_url_length = 2079
 
-        if options.get('use_zip64'):
-            self.allow_zip64 = True
-        else:
-            self.allow_zip64 = False
-
+        self.allow_zip64 = bool(options.get('use_zip64'))
         self.worksheet_meta = WorksheetMeta()
         self.selected = 0
         self.fileclosed = 0
@@ -162,7 +158,7 @@ class Workbook(xmlwriter.XMLwriter):
         # Add the default date format.
         if self.default_date_format is not None:
             self.default_date_format = \
-                self.add_format({'num_format': self.default_date_format})
+                    self.add_format({'num_format': self.default_date_format})
 
     def __enter__(self):
         """Return self object to use with "with" statement."""
@@ -270,7 +266,7 @@ class Workbook(xmlwriter.XMLwriter):
         elif chart_type == 'stock':
             chart = ChartStock(options)
         else:
-            warn("Unknown chart type '%s' in add_chart()" % chart_type)
+            warn(f"Unknown chart type '{chart_type}' in add_chart()")
             return
 
         # Set the embedded chart name if present.
@@ -298,7 +294,7 @@ class Workbook(xmlwriter.XMLwriter):
 
         """
         if not is_stream and not os.path.exists(vba_project):
-            warn("VBA project binary file '%s' not found." % vba_project)
+            warn(f"VBA project binary file '{vba_project}' not found.")
             return -1
 
         if self.vba_codename is None:
@@ -351,15 +347,8 @@ class Workbook(xmlwriter.XMLwriter):
 
         """
         # Convert the width/height to twips at 96 dpi.
-        if width:
-            self.window_width = int(width * 1440 / 96)
-        else:
-            self.window_width = 16095
-
-        if height:
-            self.window_height = int(height * 1440 / 96)
-        else:
-            self.window_height = 9660
+        self.window_width = int(width * 1440 / 96) if width else 16095
+        self.window_height = int(height * 1440 / 96) if height else 9660
 
     def set_tab_ratio(self, tab_ratio=None):
         """
@@ -485,16 +474,14 @@ class Workbook(xmlwriter.XMLwriter):
 
         # Local defined names are formatted like "Sheet1!name".
         sheet_parts = re.compile(r'^(.*)!(.*)$')
-        match = sheet_parts.match(name)
-
-        if match:
-            sheetname = match.group(1)
-            name = match.group(2)
+        if match := sheet_parts.match(name):
+            sheetname = match[1]
+            name = match[2]
             sheet_index = self._get_sheet_index(sheetname)
 
             # Warn if the sheet index wasn't found.
             if sheet_index is None:
-                warn("Unknown sheet name '%s' in defined_name()" % sheetname)
+                warn(f"Unknown sheet name '{sheetname}' in defined_name()")
                 return -1
         else:
             # Use -1 to indicate global names.
@@ -503,19 +490,18 @@ class Workbook(xmlwriter.XMLwriter):
         # Warn if the defined name contains invalid chars as defined by Excel.
         if (not re.match(r'^[\w\\][\w\\.]*$', name, re.UNICODE)
                 or re.match(r'^\d', name)):
-            warn("Invalid Excel characters in defined_name(): '%s'" % name)
+            warn(f"Invalid Excel characters in defined_name(): '{name}'")
             return -1
 
         # Warn if the defined name looks like a cell name.
         if re.match(r'^[a-zA-Z][a-zA-Z]?[a-dA-D]?[0-9]+$', name):
-            warn("Name looks like a cell name in defined_name(): '%s'" % name)
+            warn(f"Name looks like a cell name in defined_name(): '{name}'")
             return -1
 
         # Warn if the name looks like a R1C1 cell reference.
         if (re.match(r'^[rcRC]$', name)
                 or re.match(r'^[rcRC]\d+[rcRC]\d+$', name)):
-            warn("Invalid name '%s' like a RC cell ref in defined_name()"
-                 % name)
+            warn(f"Invalid name '{name}' like a RC cell ref in defined_name()")
             return -1
 
         self.defined_names.append([name, sheet_index, formula, False])
@@ -586,10 +572,7 @@ class Workbook(xmlwriter.XMLwriter):
             Nothing.
 
         """
-        if name is not None:
-            self.vba_codename = name
-        else:
-            self.vba_codename = 'ThisWorkbook'
+        self.vba_codename = name if name is not None else 'ThisWorkbook'
 
     def read_only_recommended(self):
         """
@@ -750,11 +733,7 @@ class Workbook(xmlwriter.XMLwriter):
     def _add_sheet(self, name, worksheet_class=None):
         # Utility for shared code in add_worksheet() and add_chartsheet().
 
-        if worksheet_class:
-            worksheet = worksheet_class()
-        else:
-            worksheet = self.worksheet_class()
-
+        worksheet = worksheet_class() if worksheet_class else self.worksheet_class()
         sheet_index = len(self.worksheets_objs)
         name = self._check_sheetname(name, isinstance(worksheet, Chartsheet))
 
@@ -807,8 +786,8 @@ class Workbook(xmlwriter.XMLwriter):
         # Check that sheet sheetname is <= 31. Excel limit.
         if len(sheetname) > 31:
             raise InvalidWorksheetName(
-                "Excel worksheet name '%s' must be <= 31 chars." %
-                sheetname)
+                f"Excel worksheet name '{sheetname}' must be <= 31 chars."
+            )
 
         # Check that sheetname doesn't contain any invalid characters.
         if invalid_char.search(sheetname):
@@ -827,8 +806,8 @@ class Workbook(xmlwriter.XMLwriter):
         for worksheet in self.worksheets():
             if sheetname.lower() == worksheet.name.lower():
                 raise DuplicateWorksheetName(
-                    "Sheetname '%s', with case ignored, is already in use." %
-                    sheetname)
+                    f"Sheetname '{sheetname}', with case ignored, is already in use."
+                )
 
         return sheetname
 
@@ -998,17 +977,9 @@ class Workbook(xmlwriter.XMLwriter):
                 xf_format.has_dxf_border = 1
 
     def _prepare_fills(self):
-        # Iterate through the XF Format objects and give them an index to
-        # non-default fill elements.
-        # The user defined fill properties start from 2 since there are 2
-        # default fills: patternType="none" and patternType="gray125".
-        fills = {}
         index = 2  # Start from 2. See above.
 
-        # Add the default fills.
-        fills['0:0:0'] = 0
-        fills['17:0:0'] = 1
-
+        fills = {'0:0:0': 0, '17:0:0': 1}
         # Store the DXF colors separately since them may be reversed below.
         for xf_format in self.dxf_formats:
             if xf_format.pattern or xf_format.bg_color or xf_format.fg_color:
@@ -1082,12 +1053,11 @@ class Workbook(xmlwriter.XMLwriter):
             if sheet.repeat_col_range or sheet.repeat_row_range:
                 hidden = 0
                 sheet_range = ''
-                if sheet.repeat_col_range and sheet.repeat_row_range:
-                    sheet_range = (sheet.repeat_col_range + ',' +
-                                   sheet.repeat_row_range)
-                else:
-                    sheet_range = (sheet.repeat_col_range +
-                                   sheet.repeat_row_range)
+                sheet_range = (
+                    f'{sheet.repeat_col_range},{sheet.repeat_row_range}'
+                    if sheet.repeat_col_range and sheet.repeat_row_range
+                    else (sheet.repeat_col_range + sheet.repeat_row_range)
+                )
                 # Store the defined names.
                 defined_names.append(['_xlnm.Print_Titles',
                                       sheet.index, sheet_range, hidden])
@@ -1112,7 +1082,7 @@ class Workbook(xmlwriter.XMLwriter):
             # lowercasing the string.
             sheet_name = sheet_name.lstrip("'").lower()
 
-            name_list.append(defined_name + "::" + sheet_name)
+            name_list.append(f"{defined_name}::{sheet_name}")
 
         # Sort based on the normalized key.
         names.sort(key=operator.itemgetter(4))

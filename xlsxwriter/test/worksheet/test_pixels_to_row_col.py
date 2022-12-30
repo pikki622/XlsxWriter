@@ -27,12 +27,11 @@ class TestPixelsToRowCol(unittest.TestCase):
         max_digit_width = 7
         padding = 5
 
-        if width < 1:
-            pixels = int(width * (max_digit_width + padding) + 0.5)
-        else:
-            pixels = int(width * max_digit_width + 0.5) + padding
-
-        return pixels
+        return (
+            int(width * (max_digit_width + padding) + 0.5)
+            if width < 1
+            else int(width * max_digit_width + 0.5) + padding
+        )
 
     # Function for testing.
     def height_to_pixels(self, height):

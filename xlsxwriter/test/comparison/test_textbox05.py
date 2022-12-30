@@ -45,7 +45,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet.insert_chart('E9', chart)
 
-        worksheet.insert_image('E25', self.image_dir + 'red.png')
+        worksheet.insert_image('E25', f'{self.image_dir}red.png')
 
         worksheet.insert_textbox('G25', 'This is some text')
 

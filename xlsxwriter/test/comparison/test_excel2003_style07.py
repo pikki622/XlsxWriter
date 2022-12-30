@@ -32,8 +32,9 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        worksheet.insert_image('B3', self.image_dir + 'yellow.jpg',
-                               {'x_offset': 4, 'y_offset': 3})
+        worksheet.insert_image(
+            'B3', f'{self.image_dir}yellow.jpg', {'x_offset': 4, 'y_offset': 3}
+        )
 
         workbook.close()
 

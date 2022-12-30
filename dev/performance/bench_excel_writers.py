@@ -17,15 +17,8 @@ import xlwt
 
 
 # Default to 1000 rows x 50 cols.
-if len(sys.argv) > 1:
-    row_max = int(sys.argv[1])
-    col_max = 50
-else:
-    row_max = 1000
-    col_max = 50
-
-if len(sys.argv) > 2:
-    col_max = int(sys.argv[2])
+row_max = int(sys.argv[1]) if len(sys.argv) > 1 else 1000
+col_max = int(sys.argv[2]) if len(sys.argv) > 2 else 50
 
 
 def print_elapsed_time(module_name, elapsed):

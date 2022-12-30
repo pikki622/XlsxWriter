@@ -66,8 +66,8 @@ class Custom(xmlwriter.XMLwriter):
     def _write_properties(self):
         # Write the <Properties> element.
         schema = 'http://schemas.openxmlformats.org/officeDocument/2006/'
-        xmlns = schema + 'custom-properties'
-        xmlns_vt = schema + 'docPropsVTypes'
+        xmlns = f'{schema}custom-properties'
+        xmlns_vt = f'{schema}docPropsVTypes'
 
         attributes = [
             ('xmlns', xmlns),
@@ -133,9 +133,5 @@ class Custom(xmlwriter.XMLwriter):
     def _write_vt_bool(self, value):
         # Write the <vt:bool> element.
 
-        if value:
-            value = 'true'
-        else:
-            value = 'false'
-
+        value = 'true' if value else 'false'
         self._xml_data_element('vt:bool', value)

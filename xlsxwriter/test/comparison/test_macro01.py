@@ -28,7 +28,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        workbook.add_vba_project(self.vba_dir + 'vbaProject01.bin')
+        workbook.add_vba_project(f'{self.vba_dir}vbaProject01.bin')
 
         worksheet.write('A1', 123)
 
@@ -43,7 +43,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        workbook.add_vba_project(self.vba_dir + 'vbaProject01.bin')
+        workbook.add_vba_project(f'{self.vba_dir}vbaProject01.bin')
 
         worksheet.write('A1', 123)
 
@@ -58,10 +58,8 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        vba_file = open(self.vba_dir + 'vbaProject01.bin', 'rb')
-        vba_data = BytesIO(vba_file.read())
-        vba_file.close()
-
+        with open(f'{self.vba_dir}vbaProject01.bin', 'rb') as vba_file:
+            vba_data = BytesIO(vba_file.read())
         workbook.add_vba_project(vba_data, True)
 
         worksheet.write('A1', 123)
@@ -77,10 +75,8 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        vba_file = open(self.vba_dir + 'vbaProject01.bin', 'rb')
-        vba_data = BytesIO(vba_file.read())
-        vba_file.close()
-
+        with open(f'{self.vba_dir}vbaProject01.bin', 'rb') as vba_file:
+            vba_data = BytesIO(vba_file.read())
         workbook.add_vba_project(vba_data, True)
 
         worksheet.write('A1', 123)

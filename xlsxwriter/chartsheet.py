@@ -172,8 +172,8 @@ class Chartsheet(worksheet.Worksheet):
         # Write the <worksheet> element. This is the root element.
 
         schema = 'http://schemas.openxmlformats.org/'
-        xmlns = schema + 'spreadsheetml/2006/main'
-        xmlns_r = schema + 'officeDocument/2006/relationships'
+        xmlns = f'{schema}spreadsheetml/2006/main'
+        xmlns_r = f'{schema}officeDocument/2006/relationships'
 
         attributes = [
             ('xmlns', xmlns),

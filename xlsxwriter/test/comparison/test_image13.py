@@ -30,7 +30,9 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
         worksheet.set_row(1, 75)
         worksheet.set_column('C:C', 32)
 
-        worksheet.insert_image('C2', self.image_dir + 'logo.png', {'x_offset': 8, 'y_offset': 5})
+        worksheet.insert_image(
+            'C2', f'{self.image_dir}logo.png', {'x_offset': 8, 'y_offset': 5}
+        )
 
         workbook.close()
 

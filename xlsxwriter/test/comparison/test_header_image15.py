@@ -30,8 +30,8 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
         worksheet1 = workbook.add_worksheet()
         worksheet2 = workbook.add_worksheet()
 
-        worksheet1.set_header('&L&G', {'image_left': self.image_dir + 'red.jpg'})
-        worksheet2.set_header('&L&G', {'image_left': self.image_dir + 'red.jpg'})
+        worksheet1.set_header('&L&G', {'image_left': f'{self.image_dir}red.jpg'})
+        worksheet2.set_header('&L&G', {'image_left': f'{self.image_dir}red.jpg'})
 
         workbook.close()
 

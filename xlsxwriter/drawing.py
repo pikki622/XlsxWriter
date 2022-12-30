@@ -52,10 +52,7 @@ class Drawing(xmlwriter.XMLwriter):
         self._write_drawing_workspace()
 
         if self.embedded:
-            index = 0
-            for drawing_properties in self.drawings:
-                # Write the xdr:twoCellAnchor element.
-                index += 1
+            for index, drawing_properties in enumerate(self.drawings, start=1):
                 self._write_two_cell_anchor(index, drawing_properties)
 
         else:
@@ -98,8 +95,8 @@ class Drawing(xmlwriter.XMLwriter):
     def _write_drawing_workspace(self):
         # Write the <xdr:wsDr> element.
         schema = 'http://schemas.openxmlformats.org/drawingml/'
-        xmlns_xdr = schema + '2006/spreadsheetDrawing'
-        xmlns_a = schema + '2006/main'
+        xmlns_xdr = f'{schema}2006/spreadsheetDrawing'
+        xmlns_a = f'{schema}2006/main'
 
         attributes = [
             ('xmlns:xdr', xmlns_xdr),
@@ -312,7 +309,7 @@ class Drawing(xmlwriter.XMLwriter):
         # Write the <xdr:nvGraphicFramePr> element.
 
         if not name:
-            name = 'Chart ' + str(index)
+            name = f'Chart {str(index)}'
 
         self._xml_start_tag('xdr:nvGraphicFramePr')
 
@@ -395,12 +392,9 @@ class Drawing(xmlwriter.XMLwriter):
     def _write_a_hlink_click(self, rel_index, tip):
         # Write the <a:hlinkClick> element.
         schema = 'http://schemas.openxmlformats.org/officeDocument/'
-        xmlns_r = schema + '2006/relationships'
+        xmlns_r = f'{schema}2006/relationships'
 
-        attributes = [
-            ('xmlns:r', xmlns_r),
-            ('r:id', 'rId' + str(rel_index)),
-        ]
+        attributes = [('xmlns:r', xmlns_r), ('r:id', f'rId{str(rel_index)}')]
 
         if tip:
             attributes.append(('tooltip', tip))
@@ -475,7 +469,7 @@ class Drawing(xmlwriter.XMLwriter):
         self._xml_start_tag('a:graphicData', attributes)
 
         # Write the c:chart element.
-        self._write_c_chart('rId' + str(index))
+        self._write_c_chart(f'rId{str(index)}')
 
         self._xml_end_tag('a:graphicData')
 
@@ -483,8 +477,8 @@ class Drawing(xmlwriter.XMLwriter):
         # Write the <c:chart> element.
 
         schema = 'http://schemas.openxmlformats.org/'
-        xmlns_c = schema + 'drawingml/2006/chart'
-        xmlns_r = schema + 'officeDocument/2006/relationships'
+        xmlns_c = f'{schema}drawingml/2006/chart'
+        xmlns_r = f'{schema}officeDocument/2006/relationships'
 
         attributes = [
             ('xmlns:c', xmlns_c),
@@ -544,7 +538,7 @@ class Drawing(xmlwriter.XMLwriter):
         # Write the <xdr:nvCxnSpPr> element.
         self._xml_start_tag('xdr:nvCxnSpPr')
 
-        name = shape.name + ' ' + str(index)
+        name = f'{shape.name} {str(index)}'
         if name is not None:
             self._write_c_nv_pr(index, name, None, None, None, None)
 
@@ -566,19 +560,14 @@ class Drawing(xmlwriter.XMLwriter):
 
     def _write_nv_sp_pr(self, index, shape, url_rel_index, tip,
                         description, decorative):
-        # Write the <xdr:NvSpPr> element.
-        attributes = []
-
         self._xml_start_tag('xdr:nvSpPr')
 
-        name = shape.name + ' ' + str(index)
+        name = f'{shape.name} {str(index)}'
 
         self._write_c_nv_pr(index + 1, name, description,
                             url_rel_index, tip, decorative)
 
-        if shape.name == 'TextBox':
-            attributes = [('txBox', 1)]
-
+        attributes = [('txBox', 1)] if shape.name == 'TextBox' else []
         self._xml_empty_tag('xdr:cNvSpPr', attributes)
 
         self._xml_end_tag('xdr:nvSpPr')
@@ -607,8 +596,14 @@ class Drawing(xmlwriter.XMLwriter):
         self._xml_start_tag('xdr:nvPicPr')
 
         # Write the xdr:cNvPr element.
-        self._write_c_nv_pr(index + 1, 'Picture ' + str(index), description,
-                            url_rel_index, tip, decorative)
+        self._write_c_nv_pr(
+            index + 1,
+            f'Picture {str(index)}',
+            description,
+            url_rel_index,
+            tip,
+            decorative,
+        )
 
         # Write the xdr:cNvPicPr element.
         self._write_c_nv_pic_pr()
@@ -645,8 +640,8 @@ class Drawing(xmlwriter.XMLwriter):
     def _write_a_blip(self, index):
         # Write the <a:blip> element.
         schema = 'http://schemas.openxmlformats.org/officeDocument/'
-        xmlns_r = schema + '2006/relationships'
-        r_embed = 'rId' + str(index)
+        xmlns_r = f'{schema}2006/relationships'
+        r_embed = f'rId{str(index)}'
 
         attributes = [
             ('xmlns:r', xmlns_r),
@@ -772,29 +767,17 @@ class Drawing(xmlwriter.XMLwriter):
         self._xml_end_tag('a:prstGeom')
 
     def _write_a_av_lst(self, shape=None):
-        # Write the <a:avLst> element.
-        adjustments = []
-
-        if shape and shape.adjustments:
-            adjustments = shape.adjustments
-
+        adjustments = shape.adjustments if shape and shape.adjustments else []
         if adjustments:
             self._xml_start_tag('a:avLst')
 
-            i = 0
-            for adj in adjustments:
-                i += 1
+            for i, adj in enumerate(adjustments, start=1):
                 # Only connectors have multiple adjustments.
-                if shape.connect:
-                    suffix = i
-                else:
-                    suffix = ''
-
+                suffix = i if shape.connect else ''
                 # Scale Adjustments: 100,000 = 100%.
                 adj_int = str(int(adj * 1000))
 
-                attributes = [('name', 'adj' + suffix),
-                              ('fmla', 'val' + adj_int)]
+                attributes = [('name', f'adj{suffix}'), ('fmla', f'val{adj_int}')]
 
                 self._xml_empty_tag('a:gd', attributes)
 
@@ -858,9 +841,7 @@ class Drawing(xmlwriter.XMLwriter):
             # Write the a:solidFill element.
             self._write_a_solid_fill_scheme('lt1', '50000')
 
-        # Write the line/dash type.
-        line_type = line.get('dash_type')
-        if line_type:
+        if line_type := line.get('dash_type'):
             # Write the a:prstDash element.
             self._write_a_prst_dash(line_type)
 
@@ -870,31 +851,28 @@ class Drawing(xmlwriter.XMLwriter):
         # Write the <xdr:txBody> element.
         attributes = []
 
-        if shape.text_rotation != 0:
-            if shape.text_rotation == 90:
-                attributes.append(('vert', 'vert270'))
-            if shape.text_rotation == -90:
-                attributes.append(('vert', 'vert'))
-            if shape.text_rotation == 270:
-                attributes.append(('vert', 'wordArtVert'))
-            if shape.text_rotation == 271:
-                attributes.append(('vert', 'eaVert'))
+        if shape.text_rotation == -90:
+            attributes.append(('vert', 'vert'))
+        elif shape.text_rotation == 270:
+            attributes.append(('vert', 'wordArtVert'))
+        elif shape.text_rotation == 271:
+            attributes.append(('vert', 'eaVert'))
 
-        attributes.append(('wrap', 'square'))
-        attributes.append(('rtlCol', "0"))
-
+        elif shape.text_rotation == 90:
+            attributes.append(('vert', 'vert270'))
+        attributes.extend((('wrap', 'square'), ('rtlCol', "0")))
         if not shape.align['defined']:
             attributes.append(('anchor', 't'))
         else:
 
             if 'vertical' in shape.align:
                 align = shape.align['vertical']
-                if align == 'top':
-                    attributes.append(('anchor', 't'))
+                if align == 'bottom':
+                    attributes.append(('anchor', 'b'))
                 elif align == 'middle':
                     attributes.append(('anchor', 'ctr'))
-                elif align == 'bottom':
-                    attributes.append(('anchor', 'b'))
+                elif align == 'top':
+                    attributes.append(('anchor', 't'))
             else:
                 attributes.append(('anchor', 't'))
 
@@ -964,11 +942,7 @@ class Drawing(xmlwriter.XMLwriter):
 
     def _write_font_run(self, font, style_attrs, latin_attrs, run_type):
         # Write a:rPr or a:endParaRPr.
-        if font.get('color') is not None:
-            has_color = True
-        else:
-            has_color = False
-
+        has_color = font.get('color') is not None
         if latin_attrs or has_color:
             self._xml_start_tag(run_type, style_attrs)
 

@@ -11,8 +11,8 @@ from . import xmlwriter
 
 # Long namespace strings used in the class.
 schema_root = 'http://schemas.openxmlformats.org'
-package_schema = schema_root + '/package/2006/relationships'
-document_schema = schema_root + '/officeDocument/2006/relationships'
+package_schema = f'{schema_root}/package/2006/relationships'
+document_schema = f'{schema_root}/officeDocument/2006/relationships'
 
 
 class Relationships(xmlwriter.XMLwriter):
@@ -103,7 +103,7 @@ class Relationships(xmlwriter.XMLwriter):
         rel_type, target, target_mode = relationship
 
         attributes = [
-            ('Id', 'rId' + str(self.id)),
+            ('Id', f'rId{str(self.id)}'),
             ('Type', rel_type),
             ('Target', target),
         ]

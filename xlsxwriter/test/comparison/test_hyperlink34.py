@@ -27,12 +27,16 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        worksheet.insert_image('A1', self.image_dir + 'blue.png')
-        worksheet.insert_image('B3', self.image_dir + 'red.jpg',
-                               {'url': 'https://github.com/jmcnamara'})
-        worksheet.insert_image('D5', self.image_dir + 'yellow.jpg')
-        worksheet.insert_image('F9', self.image_dir + 'grey.png',
-                               {'url': 'https://github.com'})
+        worksheet.insert_image('A1', f'{self.image_dir}blue.png')
+        worksheet.insert_image(
+            'B3',
+            f'{self.image_dir}red.jpg',
+            {'url': 'https://github.com/jmcnamara'},
+        )
+        worksheet.insert_image('D5', f'{self.image_dir}yellow.jpg')
+        worksheet.insert_image(
+            'F9', f'{self.image_dir}grey.png', {'url': 'https://github.com'}
+        )
         workbook.close()
 
         self.assertExcelEqual()

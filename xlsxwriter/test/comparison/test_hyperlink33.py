@@ -27,10 +27,11 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        worksheet.insert_image('E9',
-                               self.image_dir + 'red.png',
-                               {'url': 'https://github.com/jmcnamara',
-                                'tip': 'GitHub'})
+        worksheet.insert_image(
+            'E9',
+            f'{self.image_dir}red.png',
+            {'url': 'https://github.com/jmcnamara', 'tip': 'GitHub'},
+        )
 
         workbook.close()
 

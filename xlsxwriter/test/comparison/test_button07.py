@@ -33,7 +33,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
         worksheet.insert_button('C2', {'macro': 'say_hello',
                                        'caption': 'Hello'})
 
-        workbook.add_vba_project(self.vba_dir + 'vbaProject02.bin')
+        workbook.add_vba_project(f'{self.vba_dir}vbaProject02.bin')
 
         workbook.close()
 
@@ -52,7 +52,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
         worksheet.insert_button('C2', {'macro': 'say_hello',
                                        'caption': 'Hello'})
 
-        workbook.add_vba_project(self.vba_dir + 'vbaProject02.bin')
+        workbook.add_vba_project(f'{self.vba_dir}vbaProject02.bin')
 
         workbook.close()
 
@@ -68,7 +68,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
         worksheet.insert_button('C2', {'macro': 'say_hello',
                                        'caption': 'Hello'})
 
-        workbook.add_vba_project(self.vba_dir + 'vbaProject02.bin')
+        workbook.add_vba_project(f'{self.vba_dir}vbaProject02.bin')
 
         workbook.close()
 

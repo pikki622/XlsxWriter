@@ -107,21 +107,18 @@ class ChartScatter(chart.Chart):
         subtype = self.subtype
 
         # Set the user defined chart subtype.
-        if subtype == 'marker_only':
+        if subtype in ['marker_only', 'straight_with_markers']:
             style = 'lineMarker'
 
-        if subtype == 'straight_with_markers':
-            style = 'lineMarker'
-
-        if subtype == 'straight':
-            style = 'lineMarker'
+        elif subtype == 'smooth':
+            style = 'smoothMarker'
             self.default_marker = {'type': 'none'}
 
-        if subtype == 'smooth_with_markers':
+        elif subtype == 'smooth_with_markers':
             style = 'smoothMarker'
 
-        if subtype == 'smooth':
-            style = 'smoothMarker'
+        elif subtype == 'straight':
+            style = 'lineMarker'
             self.default_marker = {'type': 'none'}
 
         # Add default formatting to the series data.

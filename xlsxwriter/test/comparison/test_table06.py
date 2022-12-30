@@ -43,7 +43,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
         worksheet.write_comment('H1', 'Test1')
         worksheet.write_comment('J1', 'Test2')
 
-        worksheet.insert_image('A4', self.image_dir + 'blue.png')
+        worksheet.insert_image('A4', f'{self.image_dir}blue.png')
 
         workbook.close()
 

@@ -29,10 +29,9 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        worksheet.insert_image('B3', self.image_dir + 'red.jpg')
+        worksheet.insert_image('B3', f'{self.image_dir}red.jpg')
 
-        worksheet.set_header('&L&G',
-                             {'image_left': self.image_dir + 'blue.jpg'})
+        worksheet.set_header('&L&G', {'image_left': f'{self.image_dir}blue.jpg'})
 
         workbook.close()
 

@@ -24,10 +24,10 @@ def _xml_to_list(xml_str):
 
     # Add back the removed brackets.
     for index, element in enumerate(elements):
-        if not element[0] == '<':
-            elements[index] = '<' + elements[index]
-        if not element[-1] == '>':
-            elements[index] = elements[index] + '>'
+        if element[0] != '<':
+            elements[index] = f'<{elements[index]}'
+        if element[-1] != '>':
+            elements[index] = f'{elements[index]}>'
 
     return elements
 
@@ -110,20 +110,20 @@ def _compare_xlsx_files(got_file, exp_file, ignore_files, ignore_elements):
         # Open the XlsxWriter as a zip file for testing.
         got_zip = ZipFile(got_file, 'r')
     except IOError as e:
-        error = "XlsxWriter file error: " + str(e)
+        error = f"XlsxWriter file error: {str(e)}"
         return error, ''
     except (BadZipfile, LargeZipFile) as e:
-        error = "XlsxWriter zipfile error, '" + got_file + "': " + str(e)
+        error = f"XlsxWriter zipfile error, '{got_file}': {str(e)}"
         return error, ''
 
     try:
         # Open the Excel as a zip file for testing.
         exp_zip = ZipFile(exp_file, 'r')
     except IOError as e:
-        error = "Excel file error: " + str(e)
+        error = f"Excel file error: {str(e)}"
         return error, ''
     except (BadZipfile, LargeZipFile) as e:
-        error = "Excel zipfile error, '" + exp_file + "': " + str(e)
+        error = f"Excel zipfile error, '{exp_file}': {str(e)}"
         return error, ''
 
     # Get the filenames from the zip files.
@@ -147,7 +147,7 @@ def _compare_xlsx_files(got_file, exp_file, ignore_files, ignore_elements):
         extension = os.path.splitext(filename)[1]
         if extension in ('.png', '.jpeg', '.gif', '.bmp', '.wmf', '.emf', '.bin'):
             if got_xml_str != exp_xml_str:
-                return 'got: %s' % filename, 'exp: %s' % filename
+                return f'got: {filename}', f'exp: {filename}'
             continue
 
         got_xml_str = got_xml_str.decode('utf-8')

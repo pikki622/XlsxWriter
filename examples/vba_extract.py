@@ -32,32 +32,29 @@ try:
     xlsm_zip = ZipFile(xlsm_file, 'r')
 
     # Read the xl/vbaProject.bin file.
-    vba_data = xlsm_zip.read('xl/' + vba_filename)
+    vba_data = xlsm_zip.read(f'xl/{vba_filename}')
 
-    # Write the vba data to a local file.
-    vba_file = open(vba_filename, "wb")
-    vba_file.write(vba_data)
-    vba_file.close()
-
+    with open(vba_filename, "wb") as vba_file:
+        vba_file.write(vba_data)
 except IOError as e:
-    print("File error: %s" % str(e))
+    print(f"File error: {str(e)}")
     exit()
 
 except KeyError as e:
     # Usually when there isn't a xl/vbaProject.bin member in the file.
-    print("File error: %s" % str(e))
-    print("File may not be an Excel xlsm macro file: '%s'" % xlsm_file)
+    print(f"File error: {str(e)}")
+    print(f"File may not be an Excel xlsm macro file: '{xlsm_file}'")
     exit()
 
 except BadZipfile as e:
     # Usually if the file is an xls file and not an xlsm file.
-    print("File error: %s: '%s'" % (str(e), xlsm_file))
+    print(f"File error: {str(e)}: '{xlsm_file}'")
     print("File may not be an Excel xlsm macro file.")
     exit()
 
 except Exception as e:
     # Catch any other exceptions.
-    print("File error: %s" % str(e))
+    print(f"File error: {str(e)}")
     exit()
 
-print("Extracted: %s" % vba_filename)
+print(f"Extracted: {vba_filename}")

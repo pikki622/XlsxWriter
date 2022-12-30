@@ -138,14 +138,13 @@ class SharedStringTable(object):
             # String isn't already stored in the table so add it.
             index = self.unique_count
             self.string_table[string] = index
-            self.count += 1
             self.unique_count += 1
-            return index
         else:
             # String exists in the table.
             index = self.string_table[string]
-            self.count += 1
-            return index
+
+        self.count += 1
+        return index
 
     def _get_shared_string(self, index):
         """" Get a shared string from the index. """

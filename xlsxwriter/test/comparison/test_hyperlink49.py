@@ -29,9 +29,11 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet.write_url('A1', 'https://github.com/jmcnamara')
 
-        worksheet.insert_image('E9',
-                               self.image_dir + 'red.png',
-                               {'url': 'https://github.com/jmcnamara'})
+        worksheet.insert_image(
+            'E9',
+            f'{self.image_dir}red.png',
+            {'url': 'https://github.com/jmcnamara'},
+        )
 
         workbook.close()
 

@@ -210,8 +210,7 @@ class Packager(object):
         if not self.workbook.charts:
             return
 
-        index = 1
-        for chart in self.workbook.charts:
+        for index, chart in enumerate(self.workbook.charts, start=1):
             # Check that the chart has at least one data series.
             if not chart.series:
                 raise EmptyChartSeries("Chart%d must contain at least one "
@@ -221,19 +220,16 @@ class Packager(object):
             chart._set_xml_writer(self._filename('xl/charts/chart'
                                                  + str(index) + '.xml'))
             chart._assemble_xml_file()
-            index += 1
 
     def _write_drawing_files(self):
         # Write the drawing files.
         if not self.drawing_count:
             return
 
-        index = 1
-        for drawing in self.workbook.drawings:
+        for index, drawing in enumerate(self.workbook.drawings, start=1):
             drawing._set_xml_writer(self._filename('xl/drawings/drawing'
                                                    + str(index) + '.xml'))
             drawing._assemble_xml_file()
-            index += 1
 
     def _write_vml_files(self):
         # Write the comment VML files.
@@ -367,26 +363,26 @@ class Packager(object):
         chartsheet_index = 1
         for worksheet in self.workbook.worksheets():
             if worksheet.is_chartsheet:
-                content._add_chartsheet_name('sheet' + str(chartsheet_index))
+                content._add_chartsheet_name(f'sheet{str(chartsheet_index)}')
                 chartsheet_index += 1
             else:
-                content._add_worksheet_name('sheet' + str(worksheet_index))
+                content._add_worksheet_name(f'sheet{str(worksheet_index)}')
                 worksheet_index += 1
 
         for i in range(1, self.chart_count + 1):
-            content._add_chart_name('chart' + str(i))
+            content._add_chart_name(f'chart{str(i)}')
 
         for i in range(1, self.drawing_count + 1):
-            content._add_drawing_name('drawing' + str(i))
+            content._add_drawing_name(f'drawing{str(i)}')
 
         if self.num_vml_files:
             content._add_vml_name()
 
         for i in range(1, self.table_count + 1):
-            content._add_table_name('table' + str(i))
+            content._add_table_name(f'table{str(i)}')
 
         for i in range(1, self.num_comment_files + 1):
-            content._add_comment_name('comments' + str(i))
+            content._add_comment_name(f'comments{str(i)}')
 
         # Add the sharedString rel if there is string data in the workbook.
         if self.workbook.str_table.count:
@@ -461,7 +457,7 @@ class Packager(object):
     def _get_table_count(self):
         # Count the table files. Required for the [Content_Types] file.
         for worksheet in self.workbook.worksheets():
-            for table_props in worksheet.tables:
+            for _ in worksheet.tables:
                 self.table_count += 1
 
     def _write_root_rels_file(self):
@@ -488,21 +484,19 @@ class Packager(object):
         # Write the _rels/.rels xml file.
         rels = Relationships()
 
-        worksheet_index = 1
         chartsheet_index = 1
 
+        worksheet_index = 1
         for worksheet in self.workbook.worksheets():
             if worksheet.is_chartsheet:
-                rels._add_document_relationship('/chartsheet',
-                                                'chartsheets/sheet'
-                                                + str(chartsheet_index)
-                                                + '.xml')
+                rels._add_document_relationship(
+                    '/chartsheet', f'chartsheets/sheet{str(chartsheet_index)}.xml'
+                )
                 chartsheet_index += 1
             else:
-                rels._add_document_relationship('/worksheet',
-                                                'worksheets/sheet'
-                                                + str(worksheet_index)
-                                                + '.xml')
+                rels._add_document_relationship(
+                    '/worksheet', f'worksheets/sheet{str(worksheet_index)}.xml'
+                )
                 worksheet_index += 1
 
         rels._add_document_relationship('/theme', 'theme/theme1.xml')
@@ -621,24 +615,20 @@ class Packager(object):
     def _add_image_files(self):
         # Write the /xl/media/image?.xml files.
         workbook = self.workbook
-        index = 1
-
-        for image in workbook.images:
+        for index, image in enumerate(workbook.images, start=1):
             filename = image[0]
-            ext = '.' + image[1]
+            ext = f'.{image[1]}'
             image_data = image[2]
 
-            xml_image_name = 'xl/media/image' + str(index) + ext
+            xml_image_name = f'xl/media/image{str(index)}{ext}'
 
             if not self.in_memory:
                 # In file mode we just write or copy the image file.
                 os_filename = self._filename(xml_image_name)
 
                 if image_data:
-                    # The data is in a byte stream. Write it to the target.
-                    os_file = open(os_filename, mode='wb')
-                    os_file.write(image_data.getvalue())
-                    os_file.close()
+                    with open(os_filename, mode='wb') as os_file:
+                        os_file.write(image_data.getvalue())
                 else:
                     copy(filename, os_filename)
 
@@ -654,14 +644,10 @@ class Packager(object):
                     # The data is already in a byte stream.
                     os_filename = image_data
                 else:
-                    image_file = open(filename, mode='rb')
-                    image_data = image_file.read()
-                    os_filename = BytesIO(image_data)
-                    image_file.close()
-
+                    with open(filename, mode='rb') as image_file:
+                        image_data = image_file.read()
+                        os_filename = BytesIO(image_data)
                 self.filenames.append((os_filename, xml_image_name, True))
-
-            index += 1
 
     def _add_vba_project(self):
         # Copy in a vbaProject.bin file.
@@ -678,10 +664,8 @@ class Packager(object):
             os_filename = self._filename(xml_vba_name)
 
             if vba_is_stream:
-                # The data is in a byte stream. Write it to the target.
-                os_file = open(os_filename, mode='wb')
-                os_file.write(vba_project.getvalue())
-                os_file.close()
+                with open(os_filename, mode='wb') as os_file:
+                    os_file.write(vba_project.getvalue())
             else:
                 copy(vba_project, os_filename)
 
@@ -691,9 +675,7 @@ class Packager(object):
                 # The data is already in a byte stream.
                 os_filename = vba_project
             else:
-                vba_file = open(vba_project, mode='rb')
-                vba_data = vba_file.read()
-                os_filename = BytesIO(vba_data)
-                vba_file.close()
-
+                with open(vba_project, mode='rb') as vba_file:
+                    vba_data = vba_file.read()
+                    os_filename = BytesIO(vba_data)
             self.filenames.append((os_filename, xml_vba_name, True))

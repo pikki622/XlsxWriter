@@ -241,10 +241,8 @@ def write_worksheet_data(worksheet, header):
         ['North', 'Xi',     'Grape',  7580],
         ['South', 'Hector', 'Apple',  9814])
 
-    row_num = 1
-    for row_data in data:
+    for row_num, row_data in enumerate(data, start=1):
         worksheet.write_row(row_num, 0, row_data)
-        row_num += 1
 
 if __name__ == "__main__":
     main()

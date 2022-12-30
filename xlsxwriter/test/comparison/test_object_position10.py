@@ -27,7 +27,9 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        worksheet.insert_image('E9', self.image_dir + 'red.png', {'object_position': 4})
+        worksheet.insert_image(
+            'E9', f'{self.image_dir}red.png', {'object_position': 4}
+        )
 
         worksheet.set_column('E:E', None, None, {'hidden': True})
 

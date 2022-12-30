@@ -43,7 +43,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet.insert_chart('E9', chart)
 
-        worksheet.insert_image('F2', self.image_dir + 'red.png')
+        worksheet.insert_image('F2', f'{self.image_dir}red.png')
 
         workbook.close()
 

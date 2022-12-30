@@ -45,7 +45,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
         worksheet.set_row(12, None, None, {'hidden': True})
         worksheet.set_column('F:F', None, None, {'hidden': True})
 
-        worksheet.insert_image('E12', self.image_dir + 'logo.png')
+        worksheet.insert_image('E12', f'{self.image_dir}logo.png')
 
         workbook.close()
 

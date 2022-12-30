@@ -28,15 +28,23 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet()
 
-        worksheet.set_header('&L&G&C&G&R&G',
-                             {'image_left': self.image_dir + 'red.jpg',
-                              'image_center': self.image_dir + 'blue.jpg',
-                              'image_right': self.image_dir + 'red.jpg'})
+        worksheet.set_header(
+            '&L&G&C&G&R&G',
+            {
+                'image_left': f'{self.image_dir}red.jpg',
+                'image_center': f'{self.image_dir}blue.jpg',
+                'image_right': f'{self.image_dir}red.jpg',
+            },
+        )
 
-        worksheet.set_footer('&L&G&C&G&R&G',
-                             {'image_left': self.image_dir + 'blue.jpg',
-                              'image_center': self.image_dir + 'red.jpg',
-                              'image_right': self.image_dir + 'blue.jpg'})
+        worksheet.set_footer(
+            '&L&G&C&G&R&G',
+            {
+                'image_left': f'{self.image_dir}blue.jpg',
+                'image_center': f'{self.image_dir}red.jpg',
+                'image_right': f'{self.image_dir}blue.jpg',
+            },
+        )
 
         workbook.close()
 

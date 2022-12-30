@@ -28,10 +28,7 @@ def excel_string_width(str):
     """
     string_width = len(str)
 
-    if string_width == 0:
-        return 0
-    else:
-        return string_width * 1.1
+    return 0 if string_width == 0 else string_width * 1.1
 
 
 class MyWorksheet(Worksheet):

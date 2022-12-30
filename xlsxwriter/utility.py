@@ -126,13 +126,10 @@ def xl_cell_to_rowcol(cell_str):
     col_str = match.group(2)
     row_str = match.group(4)
 
-    # Convert base26 column string to number.
-    expn = 0
-    col = 0
-    for char in reversed(col_str):
-        col += (ord(char) - ord('A') + 1) * (26 ** expn)
-        expn += 1
-
+    col = sum(
+        (ord(char) - ord('A') + 1) * (26**expn)
+        for expn, char in enumerate(reversed(col_str))
+    )
     # Convert 1-index to zero-index
     row = int(row_str) - 1
     col -= 1
@@ -162,23 +159,12 @@ def xl_cell_to_rowcol_abs(cell_str):
     row_abs = match.group(3)
     row_str = match.group(4)
 
-    if col_abs:
-        col_abs = True
-    else:
-        col_abs = False
-
-    if row_abs:
-        row_abs = True
-    else:
-        row_abs = False
-
-    # Convert base26 column string to number.
-    expn = 0
-    col = 0
-    for char in reversed(col_str):
-        col += (ord(char) - ord('A') + 1) * (26 ** expn)
-        expn += 1
-
+    col_abs = bool(col_abs)
+    row_abs = bool(row_abs)
+    col = sum(
+        (ord(char) - ord('A') + 1) * (26**expn)
+        for expn, char in enumerate(reversed(col_str))
+    )
     # Convert 1-index to zero-index
     row = int(row_str) - 1
     col -= 1
@@ -207,10 +193,7 @@ def xl_range(first_row, first_col, last_row, last_col):
         warn("Row and column numbers must be >= 0")
         return None
 
-    if range1 == range2:
-        return range1
-    else:
-        return range1 + ':' + range2
+    return range1 if range1 == range2 else f'{range1}:{range2}'
 
 
 def xl_range_abs(first_row, first_col, last_row, last_col):
@@ -235,10 +218,7 @@ def xl_range_abs(first_row, first_col, last_row, last_col):
         warn("Row and column numbers must be >= 0")
         return None
 
-    if range1 == range2:
-        return range1
-    else:
-        return range1 + ':' + range2
+    return range1 if range1 == range2 else f'{range1}:{range2}'
 
 
 def xl_range_formula(sheetname, first_row, first_col, last_row, last_col):
@@ -260,7 +240,7 @@ def xl_range_formula(sheetname, first_row, first_col, last_row, last_col):
     cell_range = xl_range_abs(first_row, first_col, last_row, last_col)
     sheetname = quote_sheetname(sheetname)
 
-    return sheetname + '!' + cell_range
+    return f'{sheetname}!{cell_range}'
 
 
 def quote_sheetname(sheetname):
@@ -282,7 +262,7 @@ def quote_sheetname(sheetname):
         sheetname = sheetname.replace("'", "''")
 
         # Single quote the sheet name.
-        sheetname = "'%s'" % sheetname
+        sheetname = f"'{sheetname}'"
 
     return sheetname
 
@@ -314,7 +294,7 @@ def xl_color(color):
         color = named_colors[color]
 
     if not re.match('#[0-9a-fA-F]{6}', color):
-        warn("Color '%s' isn't a valid Excel color" % color)
+        warn(f"Color '{color}' isn't a valid Excel color")
 
     # Convert the RGB color to the Excel ARGB format.
     return "FF" + color.lstrip('#').upper()
@@ -647,12 +627,11 @@ def remove_datetime_timezone(dt_obj, remove_timezone):
     # constructor.
     if remove_timezone:
         dt_obj = dt_obj.replace(tzinfo=None)
-    else:
-        if dt_obj.tzinfo:
-            raise TypeError(
-                "Excel doesn't support timezones in datetimes. "
-                "Set the tzinfo in the datetime/time object to None or "
-                "use the 'remove_timezone' Workbook() option")
+    elif dt_obj.tzinfo:
+        raise TypeError(
+            "Excel doesn't support timezones in datetimes. "
+            "Set the tzinfo in the datetime/time object to None or "
+            "use the 'remove_timezone' Workbook() option")
 
     return dt_obj
 
@@ -712,7 +691,4 @@ def datetime_to_excel_datetime(dt_obj, date_1904, remove_timezone):
 def preserve_whitespace(string):
     # Check if a string has leading or trailing whitespace that requires a
     # "preserve" attribute.
-    if (re_leading.search(string) or re_trailing.search(string)):
-        return True
-    else:
-        return False
+    return bool((re_leading.search(string) or re_trailing.search(string)))

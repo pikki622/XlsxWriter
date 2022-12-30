@@ -419,7 +419,7 @@ class Chart(xmlwriter.XMLwriter):
         }
 
         if option not in valid_options:
-            warn("Unknown show_blanks_as() option '%s'" % option)
+            warn(f"Unknown show_blanks_as() option '{option}'")
             return
 
         self.show_blanks = option
@@ -471,9 +471,8 @@ class Chart(xmlwriter.XMLwriter):
         if options is None:
             options = {}
 
-        table = {}
+        table = {'horizontal': options.get('horizontal', 1)}
 
-        table['horizontal'] = options.get('horizontal', 1)
         table['vertical'] = options.get('vertical', 1)
         table['outline'] = options.get('outline', 1)
         table['show_keys'] = options.get('show_keys', 0)
@@ -699,27 +698,23 @@ class Chart(xmlwriter.XMLwriter):
             'text_axis': False,
         }
 
-        if 'visible' in options:
-            axis['visible'] = options.get('visible')
-        else:
-            axis['visible'] = 1
-
+        axis['visible'] = options.get('visible') if 'visible' in options else 1
         # Convert the display units.
         axis['display_units'] = self._get_display_units(axis['display_units'])
         axis['display_units_visible'] = \
-            options.get('display_units_visible', True)
+                options.get('display_units_visible', True)
 
         # Map major_gridlines properties.
         if (options.get('major_gridlines')
                 and options['major_gridlines']['visible']):
             axis['major_gridlines'] = \
-                self._get_gridline_properties(options['major_gridlines'])
+                    self._get_gridline_properties(options['major_gridlines'])
 
         # Map minor_gridlines properties.
         if (options.get('minor_gridlines')
                 and options['minor_gridlines']['visible']):
             axis['minor_gridlines'] = \
-                self._get_gridline_properties(options['minor_gridlines'])
+                    self._get_gridline_properties(options['minor_gridlines'])
 
         # Only use the first letter of bottom, top, left or right.
         if axis.get('position'):
@@ -729,10 +724,7 @@ class Chart(xmlwriter.XMLwriter):
         if axis.get('position_axis'):
             if axis['position_axis'] == 'on_tick':
                 axis['position_axis'] = 'midCat'
-            elif axis['position_axis'] == 'between':
-                # Doesn't need to be modified.
-                pass
-            else:
+            elif axis['position_axis'] != 'between':
                 # Otherwise use the default value.
                 axis['position_axis'] = None
 
@@ -765,7 +757,7 @@ class Chart(xmlwriter.XMLwriter):
 
         # Set the axis name layout.
         axis['name_layout'] = \
-            self._get_layout_properties(options.get('name_layout'), True)
+                self._get_layout_properties(options.get('name_layout'), True)
 
         # Set the line properties for the axis.
         axis['line'] = Shape._get_line_properties(options.get('line'))
@@ -778,7 +770,7 @@ class Chart(xmlwriter.XMLwriter):
 
         # Set the gradient fill properties for the series.
         axis['gradient'] = \
-            Shape._get_gradient_properties(options.get('gradient'))
+                Shape._get_gradient_properties(options.get('gradient'))
 
         # Pattern fill overrides solid fill.
         if axis.get('pattern'):
@@ -791,9 +783,9 @@ class Chart(xmlwriter.XMLwriter):
 
         # Set the tick marker types.
         axis['minor_tick_mark'] = \
-            self._get_tick_type(options.get('minor_tick_mark'))
+                self._get_tick_type(options.get('minor_tick_mark'))
         axis['major_tick_mark'] = \
-            self._get_tick_type(options.get('major_tick_mark'))
+                self._get_tick_type(options.get('major_tick_mark'))
 
         return axis
 
@@ -833,13 +825,12 @@ class Chart(xmlwriter.XMLwriter):
             # Check for unquoted sheetnames.
             if (data and ' ' in data and "'" not in data
                     and self.warn_sheetname):
-                warn("Sheetname in '%s' contains spaces but isn't quoted. "
-                     "This may cause errors in Excel." % data)
+                warn(
+                    f"Sheetname in '{data}' contains spaces but isn't quoted. This may cause errors in Excel."
+                )
             return data
 
-        formula = xl_range_formula(*data)
-
-        return formula
+        return xl_range_formula(*data)
 
     def _process_names(self, name, name_formula):
         # Switch name and name_formula parameters if required.
@@ -848,7 +839,7 @@ class Chart(xmlwriter.XMLwriter):
             if isinstance(name, list):
                 # Convert an list of values into a name formula.
                 cell = xl_rowcol_to_cell(name[1], name[2], True, True)
-                name_formula = quote_sheetname(name[0]) + '!' + cell
+                name_formula = f'{quote_sheetname(name[0])}!{cell}'
                 name = ''
             elif re.match(r'^=?[^!]+!\$?[A-Z]+\$?[0-9]+', name):
                 # Name looks like a formula, use it to set name_formula.
@@ -930,32 +921,32 @@ class Chart(xmlwriter.XMLwriter):
         # Copy the user defined properties since they will be modified.
         marker = copy.deepcopy(marker)
 
-        types = {
-            'automatic': 'automatic',
-            'none': 'none',
-            'square': 'square',
-            'diamond': 'diamond',
-            'triangle': 'triangle',
-            'x': 'x',
-            'star': 'star',
-            'dot': 'dot',
-            'short_dash': 'dot',
-            'dash': 'dash',
-            'long_dash': 'dash',
-            'circle': 'circle',
-            'plus': 'plus',
-            'picture': 'picture',
-        }
-
         # Check for valid types.
         marker_type = marker.get('type')
 
         if marker_type is not None:
 
+            types = {
+                'automatic': 'automatic',
+                'none': 'none',
+                'square': 'square',
+                'diamond': 'diamond',
+                'triangle': 'triangle',
+                'x': 'x',
+                'star': 'star',
+                'dot': 'dot',
+                'short_dash': 'dot',
+                'dash': 'dash',
+                'long_dash': 'dash',
+                'circle': 'circle',
+                'plus': 'plus',
+                'picture': 'picture',
+            }
+
             if marker_type in types:
                 marker['type'] = types[marker_type]
             else:
-                warn("Unknown marker type '%s" % marker_type)
+                warn(f"Unknown marker type '{marker_type}")
                 return
 
         # Set the line properties for the marker.
@@ -1014,7 +1005,7 @@ class Chart(xmlwriter.XMLwriter):
         if trend_type in types:
             trendline['type'] = types[trend_type]
         else:
-            warn("Unknown trendline type '%s'" % trend_type)
+            warn(f"Unknown trendline type '{trend_type}'")
             return
 
         # Set the line properties for the trendline.
@@ -1076,7 +1067,7 @@ class Chart(xmlwriter.XMLwriter):
         if error_type in types:
             error_bars['type'] = types[error_type]
         else:
-            warn("Unknown error bars type '%s" % error_type)
+            warn(f"Unknown error bars type '{error_type}")
             return
 
         # Set the value for error types that require it.
@@ -1093,10 +1084,6 @@ class Chart(xmlwriter.XMLwriter):
                 error_bars['direction'] = 'minus'
             elif options['direction'] == 'plus':
                 error_bars['direction'] = 'plus'
-            else:
-                # Default to 'both'.
-                pass
-
         # Set any custom values.
         error_bars['plus_values'] = options.get('plus_values')
         error_bars['minus_values'] = options.get('minus_values')
@@ -1128,31 +1115,25 @@ class Chart(xmlwriter.XMLwriter):
         # Copy the user defined properties since they will be modified.
         labels = copy.deepcopy(labels)
 
-        # Map user defined label positions to Excel positions.
-        position = labels.get('position')
-
-        if position:
+        if position := labels.get('position'):
             if position in self.label_positions:
                 if position == self.label_position_default:
                     labels['position'] = None
                 else:
                     labels['position'] = self.label_positions[position]
             else:
-                warn("Unsupported label position '%s' for this chart type"
-                     % position)
+                warn(f"Unsupported label position '{position}' for this chart type")
                 return
 
-        # Map the user defined label separator to the Excel separator.
-        separator = labels.get('separator')
-        separators = {
-            ',': ', ',
-            ';': '; ',
-            '.': '. ',
-            "\n": "\n",
-            ' ': ' ',
-        }
+        if separator := labels.get('separator'):
+            separators = {
+                ',': ', ',
+                ';': '; ',
+                '.': '. ',
+                "\n": "\n",
+                ' ': ' ',
+            }
 
-        if separator:
             if separator in separators:
                 labels['separator'] = separators[separator]
             else:
@@ -1246,9 +1227,6 @@ class Chart(xmlwriter.XMLwriter):
         return labels
 
     def _get_area_properties(self, options):
-        # Convert user area properties to the structure required internally.
-        area = {}
-
         # Set the line properties for the chartarea.
         line = Shape._get_line_properties(options.get('line'))
 
@@ -1277,22 +1255,19 @@ class Chart(xmlwriter.XMLwriter):
         # Set the plotarea layout.
         layout = self._get_layout_properties(options.get('layout'), False)
 
-        area['line'] = line
-        area['fill'] = fill
-        area['pattern'] = pattern
-        area['layout'] = layout
-        area['gradient'] = gradient
-
-        return area
+        return {
+            'line': line,
+            'fill': fill,
+            'pattern': pattern,
+            'layout': layout,
+            'gradient': gradient,
+        }
 
     def _get_legend_properties(self, options=None):
-        # Convert user legend properties to the structure required internally.
-        legend = {}
-
         if options is None:
             options = {}
 
-        legend['position'] = options.get('position', 'right')
+        legend = {'position': options.get('position', 'right')}
         legend['delete_series'] = options.get('delete_series')
         legend['font'] = self._convert_font_args(options.get('font'))
         legend['layout'] = self._get_layout_properties(options.get('layout'),
@@ -1339,28 +1314,21 @@ class Chart(xmlwriter.XMLwriter):
         return legend
 
     def _get_layout_properties(self, args, is_text):
-        # Convert user defined layout properties to format used internally.
-        layout = {}
-
         if not args:
             return
 
-        if is_text:
-            properties = ('x', 'y')
-        else:
-            properties = ('x', 'y', 'width', 'height')
-
+        properties = ('x', 'y') if is_text else ('x', 'y', 'width', 'height')
         # Check for valid properties.
         for key in args.keys():
             if key not in properties:
-                warn("Property '%s' allowed not in layout options" % key)
+                warn(f"Property '{key}' allowed not in layout options")
                 return
 
+        layout = {}
         # Set the layout properties.
         for prop in properties:
             if prop not in args.keys():
-                warn("Property '%s' must be specified in layout options"
-                     % prop)
+                warn(f"Property '{prop}' must be specified in layout options")
                 return
 
             value = args[prop]
@@ -1368,13 +1336,13 @@ class Chart(xmlwriter.XMLwriter):
             try:
                 float(value)
             except ValueError:
-                warn("Property '%s' value '%s' must be numeric in layout" %
-                     (prop, value))
+                warn(f"Property '{prop}' value '{value}' must be numeric in layout")
                 return
 
             if value < 0 or value > 1:
-                warn("Property '%s' value '%s' must be in range "
-                     "0 < x <= 1 in layout options" % (prop, value))
+                warn(
+                    f"Property '{prop}' value '{value}' must be in range 0 < x <= 1 in layout options"
+                )
                 return
 
             # Convert to the format used by Excel for easier testing
@@ -1431,23 +1399,12 @@ class Chart(xmlwriter.XMLwriter):
         return points
 
     def _has_fill_formatting(self, element):
-        # Check if a chart element has line, fill or gradient formatting.
-        has_fill = False
-        has_line = False
         has_pattern = element.get('pattern')
         has_gradient = element.get('gradient')
 
-        if element.get('fill') and element['fill']['defined']:
-            has_fill = True
-
-        if element.get('line') and element['line']['defined']:
-            has_line = True
-
-        if (not has_fill and not has_line and not has_pattern
-                and not has_gradient):
-            return False
-        else:
-            return True
+        has_fill = bool(element.get('fill') and element['fill']['defined'])
+        has_line = bool(element.get('line') and element['line']['defined'])
+        return bool(has_fill or has_line or has_pattern or has_gradient)
 
     def _get_display_units(self, display_units):
         # Convert user defined display units to internal units.
@@ -1469,7 +1426,7 @@ class Chart(xmlwriter.XMLwriter):
         if display_units in types:
             display_units = types[display_units]
         else:
-            warn("Unknown display_units type '%s'" % display_units)
+            warn(f"Unknown display_units type '{display_units}'")
             return
 
         return display_units
@@ -1489,30 +1446,16 @@ class Chart(xmlwriter.XMLwriter):
         if tick_type in types:
             tick_type = types[tick_type]
         else:
-            warn("Unknown tick_type  '%s'" % tick_type)
+            warn(f"Unknown tick_type  '{tick_type}'")
             return
 
         return tick_type
 
     def _get_primary_axes_series(self):
-        # Returns series which use the primary axes.
-        primary_axes_series = []
-
-        for series in self.series:
-            if not series['y2_axis']:
-                primary_axes_series.append(series)
-
-        return primary_axes_series
+        return [series for series in self.series if not series['y2_axis']]
 
     def _get_secondary_axes_series(self):
-        # Returns series which use the secondary axes.
-        secondary_axes_series = []
-
-        for series in self.series:
-            if series['y2_axis']:
-                secondary_axes_series.append(series)
-
-        return secondary_axes_series
+        return [series for series in self.series if series['y2_axis']]
 
     def _add_axis_ids(self, args):
         # Add unique ids for primary or secondary axes
@@ -1572,9 +1515,9 @@ class Chart(xmlwriter.XMLwriter):
     def _write_chart_space(self):
         # Write the <c:chartSpace> element.
         schema = 'http://schemas.openxmlformats.org/'
-        xmlns_c = schema + 'drawingml/2006/chart'
-        xmlns_a = schema + 'drawingml/2006/main'
-        xmlns_r = schema + 'officeDocument/2006/relationships'
+        xmlns_c = f'{schema}drawingml/2006/chart'
+        xmlns_a = f'{schema}drawingml/2006/main'
+        xmlns_r = f'{schema}officeDocument/2006/relationships'
 
         attributes = [
             ('xmlns:c', xmlns_c),
@@ -1611,21 +1554,19 @@ class Chart(xmlwriter.XMLwriter):
         if self.title_none:
             # Turn off the title.
             self._write_c_auto_title_deleted()
-        else:
-            # Write the chart title elements.
-            if self.title_formula is not None:
-                self._write_title_formula(self.title_formula,
-                                          self.title_data_id,
-                                          None,
-                                          self.title_font,
-                                          self.title_layout,
-                                          self.title_overlay)
-            elif self.title_name is not None:
-                self._write_title_rich(self.title_name,
-                                       None,
-                                       self.title_font,
-                                       self.title_layout,
-                                       self.title_overlay)
+        elif self.title_formula is not None:
+            self._write_title_formula(self.title_formula,
+                                      self.title_data_id,
+                                      None,
+                                      self.title_font,
+                                      self.title_layout,
+                                      self.title_overlay)
+        elif self.title_name is not None:
+            self._write_title_rich(self.title_name,
+                                   None,
+                                   self.title_font,
+                                   self.title_layout,
+                                   self.title_overlay)
 
         # Write the c:plotArea element.
         self._write_plot_area()
@@ -1668,11 +1609,7 @@ class Chart(xmlwriter.XMLwriter):
         second_chart = self.combined
         if second_chart:
             # Secondary axis has unique id otherwise use same as primary.
-            if second_chart.is_secondary:
-                second_chart.id = 1000 + self.id
-            else:
-                second_chart.id = self.id
-
+            second_chart.id = 1000 + self.id if second_chart.is_secondary else self.id
             # Share the same filehandle for writing.
             second_chart.fh = self.fh
 
@@ -1852,11 +1789,7 @@ class Chart(xmlwriter.XMLwriter):
         # Write the <c:cat> element.
         formula = series['categories']
         data_id = series['cat_data_id']
-        data = None
-
-        if data_id is not None:
-            data = self.formula_data[data_id]
-
+        data = self.formula_data[data_id] if data_id is not None else None
         # Ignore <c:cat> elements for charts without category values.
         if not formula:
             return
@@ -2436,12 +2369,7 @@ class Chart(xmlwriter.XMLwriter):
         self._xml_empty_tag('c:logBase', attributes)
 
     def _write_orientation(self, reverse):
-        # Write the <c:orientation> element.
-        val = 'minMax'
-
-        if reverse:
-            val = 'maxMin'
-
+        val = 'maxMin' if reverse else 'minMax'
         attributes = [('val', val)]
 
         self._xml_empty_tag('c:orientation', attributes)
@@ -2930,12 +2858,7 @@ class Chart(xmlwriter.XMLwriter):
         self._xml_end_tag('c:tx')
 
     def _write_tx_formula(self, title, data_id):
-        # Write the <c:tx> element.
-        data = None
-
-        if data_id is not None:
-            data = self.formula_data[data_id]
-
+        data = self.formula_data[data_id] if data_id is not None else None
         self._xml_start_tag('c:tx')
 
         # Write the c:strRef element.
@@ -2973,17 +2896,11 @@ class Chart(xmlwriter.XMLwriter):
 
         if rotation is not None:
             if rotation == 16200000:
-                # 270 deg/stacked angle.
-                attributes.append(('rot', 0))
-                attributes.append(('vert', 'wordArtVert'))
+                attributes.extend((('rot', 0), ('vert', 'wordArtVert')))
             elif rotation == 16260000:
-                # 271 deg/East Asian vertical.
-                attributes.append(('rot', 0))
-                attributes.append(('vert', 'eaVert'))
+                attributes.extend((('rot', 0), ('vert', 'eaVert')))
             else:
-                attributes.append(('rot', rotation))
-                attributes.append(('vert', 'horz'))
-
+                attributes.extend((('rot', rotation), ('vert', 'horz')))
         self._xml_empty_tag('a:bodyPr', attributes)
 
     def _write_a_lst_style(self):
@@ -3038,15 +2955,10 @@ class Chart(xmlwriter.XMLwriter):
         self._xml_end_tag('a:pPr')
 
     def _write_a_def_rpr(self, font):
-        # Write the <a:defRPr> element.
-        has_color = 0
-
         style_attributes = Shape._get_font_style_attributes(font)
         latin_attributes = Shape._get_font_latin_attributes(font)
 
-        if font and font.get('color') is not None:
-            has_color = 1
-
+        has_color = 1 if font and font.get('color') is not None else 0
         if latin_attributes or has_color:
             self._xml_start_tag('a:defRPr', style_attributes)
 

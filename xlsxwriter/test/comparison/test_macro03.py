@@ -27,7 +27,7 @@ class TestCompareXLSXFiles(ExcelComparisonTest):
 
         worksheet = workbook.add_worksheet('Foo')
 
-        workbook.add_vba_project(self.vba_dir + 'vbaProject04.bin')
+        workbook.add_vba_project(f'{self.vba_dir}vbaProject04.bin')
 
         worksheet.write('A1', 123)
 
